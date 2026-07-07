@@ -85,7 +85,14 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 
 ## Estado atual (2026-07-07)
 
-- main = 68ca925 (app + Supabase + RAG + OpenAI + caveman + skills de design + CLAUDE.md).
+- main = 74ab171: app + Supabase + RAG + OpenAI + redesign institucional
+  (flat, sem emojis, #1B4F8A) + LOGIN/PAPÉIS (admin gerencia usuários,
+  chaves de IA em config_app, identidade visual por órgão em
+  config_orgaos com cabeçalho/rodapé PDF+DOCX e marca d'água PDF;
+  usuário comum só wizard, processos filtrados por usuario_id; senhas
+  PBKDF2 200k; bootstrap do 1º admin; modo aberto sem banco) + Dev
+  Container do usuário. 29 testes. Migração 0004 PENDENTE de aplicação
+  pelo usuário no SQL Editor.
 - CI verde (última verificação: run #7; runs pós-OpenAI não checados
   ao vivo — mesmo código dos testes locais 19/19).
 - Banco: processos OK; RAG estruturado e vazio (usuário ainda não
