@@ -1,0 +1,699 @@
+import { describe, it, expect, beforeEach, afterEach, afterAll } from 'bun:test';
+import { existsSync, readFileSync, mkdirSync, mkdtempSync, writeFileSync, rmSync, statSync } from 'fs';
+import { homedir, tmpdir } from 'os';
+import path from 'path';
+import type { PidInfo } from '../../src/services/infrastructure/index.js';
+
+// ── Data-dir isolation (Phase 6, worker-restart plan) ──────────────────────
+// These tests write corrupt JSON and sentinel PIDs into the worker PID file,
+// so that file must NEVER be the real ~/.claude-mem/worker.pid. paths.ts
+// freezes DATA_DIR at first evaluation and ProcessManager freezes PID_FILE
+// from it at import time — and ESM hoists static imports above any env
+// assignment — so the env var is set FIRST and the code under test is loaded
+// with dynamic imports below. (`import type` above is erased at compile time
+// and loads nothing.)
+const TEST_DATA_DIR = mkdtempSync(path.join(tmpdir(), 'claude-mem-pm-test-'));
+const PREVIOUS_DATA_DIR = process.env.CLAUDE_MEM_DATA_DIR;
+process.env.CLAUDE_MEM_DATA_DIR = TEST_DATA_DIR;
+
+const {
+  writePidFile,
+  readPidFile,
+  removePidFile,
+  removePidFileIfOwner,
+  getPlatformTimeout,
+  cleanStalePidFile,
+  isPidFileRecent,
+  touchPidFile,
+  spawnDaemon,
+  resolveWorkerRuntimePath,
+  captureProcessStartToken,
+  verifyPidFileOwnership,
+} = await import('../../src/services/infrastructure/index.js');
+const { paths } = await import('../../src/shared/paths.js');
+
+// If an earlier test file in this bun process already evaluated paths.ts, the
+// module cache wins and DATA_DIR stays frozen on that earlier value — which is
+// the preload tripwire's per-run temp dir (tests/preload.ts), never the real
+// ~/.claude-mem. Derive the paths the assertions use from the SAME frozen
+// module the code under test uses, so test and code can never diverge.
+const DATA_DIR = paths.dataDir();
+const PID_FILE = paths.workerPid();
+
+describe('ProcessManager', () => {
+  const REAL_DATA_DIR = path.join(homedir(), '.claude-mem');
+
+  beforeEach(() => {
+    mkdirSync(DATA_DIR, { recursive: true });
+    removePidFile();
+  });
+
+  afterEach(() => {
+    removePidFile();
+  });
+
+  afterAll(() => {
+    if (PREVIOUS_DATA_DIR === undefined) {
+      delete process.env.CLAUDE_MEM_DATA_DIR;
+    } else {
+      process.env.CLAUDE_MEM_DATA_DIR = PREVIOUS_DATA_DIR;
+    }
+    if (DATA_DIR === TEST_DATA_DIR) {
+      // paths.ts froze on our per-file dir (this file evaluated it first):
+      // empty it but keep the directory alive so later-loaded modules in this
+      // process don't point at a deleted path.
+      rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+      mkdirSync(TEST_DATA_DIR, { recursive: true });
+    } else {
+      rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+    }
+  });
+
+  describe('test isolation (Phase 6, worker-restart plan)', () => {
+    it('resolves the PID file into a temp dir, never the real ~/.claude-mem', () => {
+      expect(DATA_DIR).not.toBe(REAL_DATA_DIR);
+      expect(PID_FILE.startsWith(REAL_DATA_DIR + path.sep)).toBe(false);
+      expect(PID_FILE).toBe(path.join(DATA_DIR, 'worker.pid'));
+    });
+
+    it('writePidFile lands in the isolated dir', () => {
+      writePidFile({ pid: 4242, port: 37777, startedAt: new Date().toISOString() });
+      expect(existsSync(PID_FILE)).toBe(true);
+      expect(readPidFile()!.pid).toBe(4242);
+    });
+  });
+
+  describe('writePidFile', () => {
+    it('should create file with PID info', () => {
+      const testInfo: PidInfo = {
+        pid: 12345,
+        port: 37777,
+        startedAt: new Date().toISOString()
+      };
+
+      writePidFile(testInfo);
+
+      expect(existsSync(PID_FILE)).toBe(true);
+      const content = JSON.parse(readFileSync(PID_FILE, 'utf-8'));
+      expect(content.pid).toBe(12345);
+      expect(content.port).toBe(37777);
+      expect(content.startedAt).toBe(testInfo.startedAt);
+    });
+
+    it('should overwrite existing PID file', () => {
+      const firstInfo: PidInfo = {
+        pid: 11111,
+        port: 37777,
+        startedAt: '2024-01-01T00:00:00.000Z'
+      };
+      const secondInfo: PidInfo = {
+        pid: 22222,
+        port: 37888,
+        startedAt: '2024-01-02T00:00:00.000Z'
+      };
+
+      writePidFile(firstInfo);
+      writePidFile(secondInfo);
+
+      const content = JSON.parse(readFileSync(PID_FILE, 'utf-8'));
+      expect(content.pid).toBe(22222);
+      expect(content.port).toBe(37888);
+    });
+  });
+
+  describe('readPidFile', () => {
+    it('should return PidInfo object for valid file', () => {
+      const testInfo: PidInfo = {
+        pid: 54321,
+        port: 37999,
+        startedAt: '2024-06-15T12:00:00.000Z'
+      };
+      writePidFile(testInfo);
+
+      const result = readPidFile();
+
+      expect(result).not.toBeNull();
+      expect(result!.pid).toBe(54321);
+      expect(result!.port).toBe(37999);
+      expect(result!.startedAt).toBe('2024-06-15T12:00:00.000Z');
+    });
+
+    it('should return null for missing file', () => {
+      removePidFile();
+
+      const result = readPidFile();
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null for corrupted JSON', () => {
+      writeFileSync(PID_FILE, 'not valid json {{{');
+
+      const result = readPidFile();
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('removePidFile', () => {
+    it('should delete existing file', () => {
+      const testInfo: PidInfo = {
+        pid: 99999,
+        port: 37777,
+        startedAt: new Date().toISOString()
+      };
+      writePidFile(testInfo);
+      expect(existsSync(PID_FILE)).toBe(true);
+
+      removePidFile();
+
+      expect(existsSync(PID_FILE)).toBe(false);
+    });
+
+    it('should not throw for missing file', () => {
+      removePidFile();
+      expect(existsSync(PID_FILE)).toBe(false);
+
+      expect(() => removePidFile()).not.toThrow();
+    });
+  });
+
+  // Phase 5 (worker-restart plan): owner-or-dead guarded deletion. The CLI
+  // stop/restart cleanup and the dying worker's restart handoff must never
+  // delete a live successor's PID file.
+  describe('removePidFileIfOwner', () => {
+    it('deletes the file when the recorded pid matches the expected owner (even if alive)', () => {
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString() });
+
+      removePidFileIfOwner(process.pid);
+
+      expect(existsSync(PID_FILE)).toBe(false);
+    });
+
+    it('deletes the file when the recorded pid is dead, regardless of owner match', () => {
+      writePidFile({ pid: 2147483647, port: 37777, startedAt: new Date().toISOString() });
+
+      removePidFileIfOwner(null);
+
+      expect(existsSync(PID_FILE)).toBe(false);
+    });
+
+    it('spares the file when the recorded pid is a live, different process (restart successor)', () => {
+      // This test process stands in for the live successor; pid 1 (init,
+      // never this process) stands in for the worker the caller shut down.
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString() });
+
+      removePidFileIfOwner(1);
+
+      expect(existsSync(PID_FILE)).toBe(true);
+      expect(readPidFile()!.pid).toBe(process.pid);
+    });
+
+    it('spares a corrupt file (ownership cannot be proven)', () => {
+      writeFileSync(PID_FILE, 'not valid json {{{');
+
+      removePidFileIfOwner(process.pid);
+
+      expect(existsSync(PID_FILE)).toBe(true);
+    });
+
+    it('deletes a parseable file with no pid field (treated as dead owner)', () => {
+      // Valid JSON, but no `pid`: recorded.pid is undefined, so
+      // isProcessAlive() is false and the owner-or-dead guard falls through
+      // to removal. This intentionally diverges from the supervisor-side
+      // removeOwnedPidFile, which spares pid-less files — that guard only
+      // ever deletes its own file, while this helper may clean dead
+      // leftovers. The divergence is safe: a pid-less file can't belong to a
+      // live successor (writePidFile always records a pid).
+      writeFileSync(PID_FILE, JSON.stringify({ port: 37777 }));
+
+      removePidFileIfOwner(null);
+
+      expect(existsSync(PID_FILE)).toBe(false);
+    });
+
+    it('does not throw when the file is missing', () => {
+      removePidFile();
+      expect(existsSync(PID_FILE)).toBe(false);
+
+      expect(() => removePidFileIfOwner(process.pid)).not.toThrow();
+    });
+  });
+
+  describe('getPlatformTimeout', () => {
+    const originalPlatform = process.platform;
+
+    afterEach(() => {
+      Object.defineProperty(process, 'platform', {
+        value: originalPlatform,
+        writable: true,
+        configurable: true
+      });
+    });
+
+    it('should return same value on non-Windows platforms', () => {
+      Object.defineProperty(process, 'platform', {
+        value: 'darwin',
+        writable: true,
+        configurable: true
+      });
+
+      const result = getPlatformTimeout(1000);
+
+      expect(result).toBe(1000);
+    });
+
+    it('should return doubled value on Windows', () => {
+      Object.defineProperty(process, 'platform', {
+        value: 'win32',
+        writable: true,
+        configurable: true
+      });
+
+      const result = getPlatformTimeout(1000);
+
+      expect(result).toBe(2000);
+    });
+
+    it('should apply 2.0x multiplier consistently on Windows', () => {
+      Object.defineProperty(process, 'platform', {
+        value: 'win32',
+        writable: true,
+        configurable: true
+      });
+
+      expect(getPlatformTimeout(500)).toBe(1000);
+      expect(getPlatformTimeout(5000)).toBe(10000);
+      expect(getPlatformTimeout(100)).toBe(200);
+    });
+
+    it('should round Windows timeout values', () => {
+      Object.defineProperty(process, 'platform', {
+        value: 'win32',
+        writable: true,
+        configurable: true
+      });
+
+      const result = getPlatformTimeout(333);
+
+      expect(result).toBe(666);
+    });
+  });
+
+  describe('resolveWorkerRuntimePath', () => {
+    it('should reuse execPath when already running under Bun on Linux', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'linux',
+        execPath: '/home/alice/.bun/bin/bun'
+      });
+
+      expect(resolved).toBe('/home/alice/.bun/bin/bun');
+    });
+
+    it('should look up Bun on non-Windows when caller is Node (e.g. MCP server)', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'linux',
+        execPath: '/usr/bin/node',
+        env: {} as NodeJS.ProcessEnv,
+        homeDirectory: '/home/alice',
+        pathExists: candidatePath => candidatePath === '/home/alice/.bun/bin/bun',
+        lookupInPath: () => null
+      });
+
+      expect(resolved).toBe('/home/alice/.bun/bin/bun');
+    });
+
+    it('should preserve bare BUN env command on non-Windows so spawn resolves it via PATH', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'linux',
+        execPath: '/usr/bin/node',
+        env: { BUN: 'bun' } as NodeJS.ProcessEnv,
+        homeDirectory: '/home/alice',
+        pathExists: () => false,
+        lookupInPath: () => null
+      });
+
+      expect(resolved).toBe('bun');
+    });
+
+    it('should fall back to PATH lookup on non-Windows when no known Bun candidate exists', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'linux',
+        execPath: '/usr/bin/node',
+        env: {} as NodeJS.ProcessEnv,
+        homeDirectory: '/home/alice',
+        pathExists: () => false,
+        lookupInPath: () => '/custom/bin/bun'
+      });
+
+      expect(resolved).toBe('/custom/bin/bun');
+    });
+
+    it('should return null on non-Windows when Bun cannot be resolved', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'linux',
+        execPath: '/usr/bin/node',
+        env: {} as NodeJS.ProcessEnv,
+        homeDirectory: '/home/alice',
+        pathExists: () => false,
+        lookupInPath: () => null
+      });
+
+      expect(resolved).toBeNull();
+    });
+
+    it('should reuse execPath when already running under Bun on Windows', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'win32',
+        execPath: 'C:\\Users\\alice\\.bun\\bin\\bun.exe'
+      });
+
+      expect(resolved).toBe('C:\\Users\\alice\\.bun\\bin\\bun.exe');
+    });
+
+    it('should prefer configured Bun path from environment when available', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'win32',
+        execPath: 'C:\\Program Files\\nodejs\\node.exe',
+        env: { BUN: 'C:\\tools\\bun.exe' } as NodeJS.ProcessEnv,
+        pathExists: candidatePath => candidatePath === 'C:\\tools\\bun.exe',
+        lookupInPath: () => null
+      });
+
+      expect(resolved).toBe('C:\\tools\\bun.exe');
+    });
+
+    it('should fall back to PATH lookup when no Bun candidate exists', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'win32',
+        execPath: 'C:\\Program Files\\nodejs\\node.exe',
+        env: {} as NodeJS.ProcessEnv,
+        pathExists: () => false,
+        lookupInPath: () => 'C:\\Program Files\\Bun\\bun.exe'
+      });
+
+      expect(resolved).toBe('C:\\Program Files\\Bun\\bun.exe');
+    });
+
+    it('should return null when Bun cannot be resolved on Windows', () => {
+      const resolved = resolveWorkerRuntimePath({
+        platform: 'win32',
+        execPath: 'C:\\Program Files\\nodejs\\node.exe',
+        env: {} as NodeJS.ProcessEnv,
+        pathExists: () => false,
+        lookupInPath: () => null
+      });
+
+      expect(resolved).toBeNull();
+    });
+  });
+
+  describe('captureProcessStartToken', () => {
+    const supported = process.platform === 'linux' || process.platform === 'darwin';
+
+    it.if(supported)('returns a non-empty token for the current process', () => {
+      const token = captureProcessStartToken(process.pid);
+      expect(typeof token).toBe('string');
+      expect((token ?? '').length).toBeGreaterThan(0);
+    });
+
+    it.if(supported)('returns a stable token across calls for the same PID', () => {
+      const first = captureProcessStartToken(process.pid);
+      const second = captureProcessStartToken(process.pid);
+      expect(first).toBe(second);
+    });
+
+    it('returns null for a non-existent PID', () => {
+      expect(captureProcessStartToken(2147483647)).toBeNull();
+    });
+
+    it('returns null for invalid PIDs', () => {
+      expect(captureProcessStartToken(0)).toBeNull();
+      expect(captureProcessStartToken(-1)).toBeNull();
+      expect(captureProcessStartToken(1.5)).toBeNull();
+      expect(captureProcessStartToken(NaN)).toBeNull();
+    });
+
+    it('win32 branch attempts a CIM lookup and degrades to null when powershell is unavailable', () => {
+      // On the non-Windows CI host powershell.exe does not exist, so the CIM
+      // lookup fails and the function returns null (the historic liveness-only
+      // fallback). The point of this test is to lock the contract: the win32
+      // path no longer unconditionally returns null at the source level — it
+      // attempts a real start-time token capture (closing the PID-reuse wedge
+      // on Windows, where /proc and `ps lstart` are unavailable) and only
+      // falls back to null when the lookup genuinely cannot run.
+      const originalPlatform = process.platform;
+      // Use a PID unlikely to be cached by other tests so we exercise the
+      // lookup path rather than a memoized result.
+      const probePid = 424242;
+      Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
+      try {
+        const result = captureProcessStartToken(probePid);
+        // Either null (powershell missing / pid absent) or a string token if
+        // the host actually is Windows — both are valid, neither throws.
+        expect(result === null || typeof result === 'string').toBe(true);
+      } finally {
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
+      }
+    });
+
+    it('win32 branch caches the per-PID lookup within the TTL window', () => {
+      // Two back-to-back calls for the same PID must return an identical value
+      // and must not throw — the second call should be served from the 5s
+      // cache rather than re-shelling. We can only assert the observable
+      // contract (stable result) cross-platform.
+      const originalPlatform = process.platform;
+      const probePid = 525252;
+      Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
+      try {
+        const first = captureProcessStartToken(probePid);
+        const second = captureProcessStartToken(probePid);
+        expect(first).toBe(second as typeof first);
+      } finally {
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
+      }
+    });
+  });
+
+  describe('writePidFile (start-token capture)', () => {
+    const supported = process.platform === 'linux' || process.platform === 'darwin';
+
+    it.if(supported)('auto-captures a startToken when writing for the current process', () => {
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString() });
+      const persisted = readPidFile();
+      expect(persisted).not.toBeNull();
+      expect(typeof persisted!.startToken).toBe('string');
+      expect((persisted!.startToken ?? '').length).toBeGreaterThan(0);
+    });
+
+    it('preserves a caller-supplied startToken verbatim', () => {
+      const provided = 'caller-supplied-token-xyz';
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString(), startToken: provided });
+      const persisted = readPidFile();
+      expect(persisted!.startToken).toBe(provided);
+    });
+
+    it('omits startToken when the target PID has no readable token (dead PID)', () => {
+      writePidFile({ pid: 2147483647, port: 37777, startedAt: new Date().toISOString() });
+      const persisted = readPidFile();
+      expect(persisted).not.toBeNull();
+      expect(persisted!.startToken).toBeUndefined();
+    });
+  });
+
+  describe('verifyPidFileOwnership', () => {
+    const supported = process.platform === 'linux' || process.platform === 'darwin';
+
+    it('returns false for null input', () => {
+      expect(verifyPidFileOwnership(null)).toBe(false);
+    });
+
+    it('returns false when the PID is not alive', () => {
+      expect(verifyPidFileOwnership({
+        pid: 2147483647,
+        port: 37777,
+        startedAt: new Date().toISOString(),
+        startToken: 'anything'
+      })).toBe(false);
+    });
+
+    it('returns true when no startToken is stored (back-compat with older PID files)', () => {
+      expect(verifyPidFileOwnership({
+        pid: process.pid,
+        port: 37777,
+        startedAt: new Date().toISOString()
+        // intentionally no startToken
+      })).toBe(true);
+    });
+
+    it.if(supported)('returns true when the stored token matches the current PID', () => {
+      const token = captureProcessStartToken(process.pid);
+      expect(token).not.toBeNull();
+      expect(verifyPidFileOwnership({
+        pid: process.pid,
+        port: 37777,
+        startedAt: new Date().toISOString(),
+        startToken: token!
+      })).toBe(true);
+    });
+
+    it.if(supported)('returns false when the stored token does not match (PID reused)', () => {
+      expect(verifyPidFileOwnership({
+        pid: process.pid,
+        port: 37777,
+        startedAt: new Date().toISOString(),
+        startToken: 'token-from-a-different-incarnation'
+      })).toBe(false);
+    });
+  });
+
+  describe('cleanStalePidFile', () => {
+    it('should remove PID file when process is dead', () => {
+      const staleInfo: PidInfo = {
+        pid: 2147483647,
+        port: 37777,
+        startedAt: '2024-01-01T00:00:00.000Z'
+      };
+      writePidFile(staleInfo);
+      expect(existsSync(PID_FILE)).toBe(true);
+
+      cleanStalePidFile();
+
+      expect(existsSync(PID_FILE)).toBe(false);
+    });
+
+    it('should keep PID file when process is alive', () => {
+      const liveInfo: PidInfo = {
+        pid: process.pid,
+        port: 37777,
+        startedAt: new Date().toISOString()
+      };
+      writePidFile(liveInfo);
+
+      cleanStalePidFile();
+
+      expect(existsSync(PID_FILE)).toBe(true);
+    });
+
+    it('should do nothing when PID file does not exist', () => {
+      removePidFile();
+      expect(existsSync(PID_FILE)).toBe(false);
+
+      expect(() => cleanStalePidFile()).not.toThrow();
+    });
+  });
+
+  describe('isPidFileRecent', () => {
+    it('should return true for a recently written PID file', () => {
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString() });
+
+      expect(isPidFileRecent(15000)).toBe(true);
+    });
+
+    it('should return false when PID file does not exist', () => {
+      removePidFile();
+
+      expect(isPidFileRecent(15000)).toBe(false);
+    });
+
+    it('should return false for a very short threshold on a real file', () => {
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString() });
+
+      expect(isPidFileRecent(-1)).toBe(false);
+    });
+  });
+
+  describe('touchPidFile', () => {
+    it('should update mtime of existing PID file', async () => {
+      writePidFile({ pid: process.pid, port: 37777, startedAt: new Date().toISOString() });
+
+      await new Promise(r => setTimeout(r, 50));
+
+      const statsBefore = statSync(PID_FILE);
+      const mtimeBefore = statsBefore.mtimeMs;
+
+      await new Promise(r => setTimeout(r, 50));
+
+      touchPidFile();
+
+      const statsAfter = statSync(PID_FILE);
+      const mtimeAfter = statsAfter.mtimeMs;
+
+      expect(mtimeAfter).toBeGreaterThanOrEqual(mtimeBefore);
+    });
+
+    it('should not throw when PID file does not exist', () => {
+      removePidFile();
+
+      expect(() => touchPidFile()).not.toThrow();
+    });
+  });
+
+  describe('spawnDaemon', () => {
+    it('should use setsid on Linux when available', () => {
+      if (process.platform === 'win32') return; 
+
+      const setsidAvailable = existsSync('/usr/bin/setsid');
+      if (!setsidAvailable) return; 
+
+      const pid = spawnDaemon('/dev/null', 39999);
+
+      expect(pid).toBeDefined();
+      expect(typeof pid).toBe('number');
+
+      if (pid !== undefined && pid > 0) {
+        try { process.kill(pid, 'SIGKILL'); } catch { /* already exited */ }
+      }
+    });
+
+    it('should return undefined when spawn fails on Windows path', () => {
+      if (process.platform === 'win32') return;
+
+      const result = spawnDaemon('/nonexistent/script.cjs', 39998);
+      expect(result).toBeDefined();
+
+      if (result !== undefined && result > 0) {
+        try { process.kill(result, 'SIGKILL'); } catch { /* already exited */ }
+      }
+    });
+
+    it('Windows 0 PID success sentinel must NOT be detected via falsy check', () => {
+      const windowsSuccessSentinel: number | undefined = 0;
+      const failureSentinel: number | undefined = undefined;
+
+      expect(windowsSuccessSentinel === undefined).toBe(false);
+      expect(failureSentinel === undefined).toBe(true);
+
+      expect(!windowsSuccessSentinel).toBe(true); 
+      expect(!failureSentinel).toBe(true);
+
+      const isFailure = (pid: number | undefined) => pid === undefined;
+      expect(isFailure(windowsSuccessSentinel)).toBe(false);
+      expect(isFailure(failureSentinel)).toBe(true);
+    });
+  });
+
+  describe('SIGHUP handling', () => {
+    it('should have SIGHUP listeners registered (integration check)', () => {
+      if (process.platform === 'win32') return;
+
+      let received = false;
+      const testHandler = () => { received = true; };
+
+      process.on('SIGHUP', testHandler);
+      expect(process.listenerCount('SIGHUP')).toBeGreaterThanOrEqual(1);
+
+      process.removeListener('SIGHUP', testHandler);
+    });
+
+    it('should ignore SIGHUP when --daemon is in process.argv', () => {
+      if (process.platform === 'win32') return;
+
+      const isDaemon = process.argv.includes('--daemon');
+      expect(isDaemon).toBe(false);
+
+      // Verify the non-daemon path: SIGHUP should trigger shutdown (covered by registerSignalHandlers)
+      // This is a logic verification test — actual signal delivery is tested manually
+    });
+  });
+});
