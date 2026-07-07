@@ -41,7 +41,7 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - Testes: 19 (pytest + streamlit AppTest, modo demo, sem rede).
   `tests/conftest.py` insere raiz no sys.path (pytest binário não o faz).
 - CI: GitHub Actions `.github/workflows/ci.yml` (python -m pytest).
-- Skill caveman em `.claude/skills/caveman/` (economia de tokens).
+- Skills do projeto em `.claude/skills/`: caveman (tokens), design-taste e design-minimalist (Front-End-Bonito; UI sempre com eles — setor público, azul #1B4F8A). Regras permanentes em CLAUDE.md do repo.
 
 ## Repos e branches
 
@@ -85,7 +85,7 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 
 ## Estado atual (2026-07-07)
 
-- main = ef5e5d3 (app completo + Supabase + RAG + OpenAI + caveman).
+- main = 68ca925 (app + Supabase + RAG + OpenAI + caveman + skills de design + CLAUDE.md).
 - CI verde (última verificação: run #7; runs pós-OpenAI não checados
   ao vivo — mesmo código dos testes locais 19/19).
 - Banco: processos OK; RAG estruturado e vazio (usuário ainda não
