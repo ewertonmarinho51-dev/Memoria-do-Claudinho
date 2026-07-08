@@ -122,6 +122,23 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## Limpeza de descrições de PDF (2026-07-08)
+
+- Descrições da planilha do usuário vinham de PDF com espaços no meio de
+  palavras ("plás tica","docu mentos","tungst ênio") e "?" no lugar de
+  apóstrofo ("d?água"). planilha.limpar_texto conserta: ?→apóstrofo entre
+  letras; espaço antes de pontuação; espaços duplos; e JUNTA palavra
+  quebrada quando o 2º pedaço é fragmento de sufixo que nunca é palavra
+  isolada (_FRAGMENTOS: tica,mentos,ado,ada,cao/coes(=ção),enio,dade,
+  essidade,bilidade,tividade,avel/aveis,encia,ancia...). CONSERVADOR: não
+  junta se o 2º pedaço é palavra real. CUIDADO: _core remove acento, então
+  "são/cidade/idade/gráfica/ida/menta/do/da/ha" FICARAM DE FORA (colidem com
+  palavra real). "cao" incluído (capta ção; risco de "cão" desprezível no
+  domínio). Aplicada em _acrescentar (import) e calcular() — dados novos e
+  já digitados; URLs (fonte) preservadas via eh_url. Casos "recicla do",
+  "vermel ha", "a proximado" NÃO são corrigidos de propósito (2º pedaço =
+  palavra real). Testes: 83. main=37a9679.
+
 ## Planilha grande: timeout do gpt-5 + qualidade (2026-07-08)
 
 - SINTOMA: usuário com planilha de ~200 itens (materiais de expediente).
