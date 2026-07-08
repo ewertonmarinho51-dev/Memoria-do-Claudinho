@@ -122,6 +122,27 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## Planilha grande: timeout do gpt-5 + qualidade (2026-07-08)
+
+- SINTOMA: usuário com planilha de ~200 itens (materiais de expediente).
+  Teste de conexão OK, mas gerar DFD: OpenAI "não respondeu/demorou" →
+  fallback Gemini → doc com a lista redigitada (lento, com erros). Palavras
+  quebradas ("plás tica") vêm dos DADOS do usuário (copiados de PDF), não
+  são bug nosso.
+- CAUSA: prompt embutia a tabela INTEIRA e pedia à IA reproduzir item a
+  item. Com 200 itens + gpt-5-mini (reasoning), estourava
+  tempo/max_completion_tokens (resposta vazia tratada como falha, 3 retries
+  lentos → parecia timeout).
+- FIX: tabelas > planilha.LIMITE_ITENS_INLINE(=12) → planilha.resumo_para_prompt
+  (contagem + valor global + amostra de 6) e a IA insere a marca
+  planilha.MARCADOR_TABELA("[[TABELA_ITENS]]"). planilha.injetar_tabela em
+  gerar_documento troca a marca pela TABELA REAL (exata; anexa ao final se a
+  IA esquecer). Tabelas pequenas seguem inline. para_markdown ganhou
+  incluir_global=False (amostras).
+- gpt-5/série o: _params_modelo_openai → reasoning_effort="low";
+  max_completion_tokens 8192→16384; API_TIMEOUT_SEGUNDOS 120→180.
+- Testes: 76. branch=8d204ec, main=a2ca854.
+
 ## CAUSA RAIZ da falha das duas APIs de IA (2026-07-08)
 
 - BUG REAL (não era chave/modelo/cota): _obter_modelo_openai() e
