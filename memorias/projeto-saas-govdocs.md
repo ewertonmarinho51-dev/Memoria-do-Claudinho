@@ -98,6 +98,30 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - Banco: processos OK; RAG estruturado e vazio (usuário ainda não
   indexou arquivos).
 
+## Login-first + identidade visual por imagem (2026-07-07)
+
+- LOGIN agora é porta de entrada real: sem Supabase conectado o app
+  mostra tela "Configuração necessária" (não cai mais em modo aberto
+  silencioso, que causava erro "supabase_url is required" ao criar
+  usuário). Modo aberto virou opt-in: env GOVDOCS_MODO_ABERTO=1 (dev/CI).
+  auth._tabela() e criar_usuario dão mensagem clara sem banco.
+- IDENTIDADE VISUAL POR IMAGEM: novo src/branding.py. Admin envia
+  documento-modelo (PDF, ou DOCX convertido via LibreOffice/soffice),
+  PyMuPDF renderiza pág1, Pillow recorta cabeçalho (topo %), rodapé
+  (base %) e marca d'água (miolo, alpha embutido no PNG). Imagens em
+  base64 nas colunas config_orgaos.cabecalho_img/rodape_img/marca_img/
+  cabecalho_pct/rodape_pct (migração 0005). export.py carimba: PDF
+  header()/footer() desenha imagens em pos exata (proporção A4) + marca
+  translúcida central; DOCX header/footer com add_picture. Fallback p/
+  texto mantido. Admin UI: abas imagem/texto, upload+sliders+prévia.
+- Deps novas: pymupdf, pillow (requirements); libreoffice (packages.txt
+  p/ Streamlit Cloud). Testes: 36 (test_branding.py, test_auth.py ampliados).
+- IMPORTANTE segurança: push protection do GitHub pegou .streamlit/
+  secrets.toml.bak (backup temp que vazou no git add -A durante teste
+  visual). Removido do commit antes de subir; .gitignore agora tem *.bak
+  e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
+- Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
+
 ## Pendências / próximos passos
 
 - [ ] Usuário testar geração real com chave OpenAI na máquina dele
