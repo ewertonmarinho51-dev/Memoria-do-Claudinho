@@ -122,6 +122,28 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## CAUSA RAIZ da falha das duas APIs de IA (2026-07-08)
+
+- BUG REAL (não era chave/modelo/cota): _obter_modelo_openai() e
+  _obter_modelo() chamam _ler_chave("...MODEL", "") com o campo de sidebar
+  VAZIO. _ler_chave fazia st.session_state.get("") → StreamlitAPIException
+  ("key must be non-empty"). Isso estourava DENTRO de _chamar_openai/
+  _chamar_gemini ao resolver o nome do modelo → AS DUAS engines falhavam
+  SEMPRE. Só aparecia em runtime Streamlit (testes com _obter_modelo*
+  monkeypatchados não pegavam). Detectado ao escrever llm.testar_conexao.
+- FIX: _ler_chave só consulta a sessão se chave_sidebar for não-vazia.
+- ROBUSTEZ: fallback automático de modelo em model_not_found/404
+  (config OPENAI_MODELOS_FALLBACK=[gpt-4o-mini,gpt-4o,gpt-4.1-mini];
+  GEMINI_MODELOS_FALLBACK=[gemini-1.5-flash,2.0-flash,flash-latest]).
+  _e_erro_de_modelo distingue: erro de modelo troca de modelo; erro de
+  chave/cota NÃO troca (falha igual em todos). _chamar_* iteram candidatos.
+- DIAGNÓSTICO: llm.testar_conexao(motor)->(ok,msg) faz chamada mínima e
+  devolve erro técnico exato; botões "Testar OpenAI/Gemini" no painel admin
+  (aba Chaves de IA). detalhe do ErroGeracaoIA lista modelos tentados.
+- Testes: 67. branch=fc8927b, main=8d0b924. LIÇÃO: bugs que só existem em
+  runtime Streamlit (st.session_state, st.secrets) não são pegos por
+  testes que monkeypatcham os getters — testar os getters DIRETO sem runtime.
+
 ## Import XLSX robusto + REBOBINADA do repo local (2026-07-08)
 
 - BUG relatado: import de XLSX dava "Nenhum item reconhecido". Causa: o
