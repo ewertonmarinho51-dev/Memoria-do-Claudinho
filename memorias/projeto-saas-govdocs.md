@@ -122,6 +122,31 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## Import XLSX robusto + REBOBINADA do repo local (2026-07-08)
+
+- BUG relatado: import de XLSX dava "Nenhum item reconhecido". Causa: o
+  mapeamento de cabeçalho era só por IGUALDADE exata com sinônimos, então
+  nomes reais por extenso ("Especificação do Objeto", "Descrição dos
+  Serviços", "Preço Unitário (R$)") não casavam → toda linha sem descrição
+  → descartada. Além disso, se um cabeçalho era detectado mas SEM a coluna
+  descrição, não caía no fallback posicional (ficava vazio).
+- FIX planilha.importar_de_xlsx: novo _campo_do_cabecalho em 3 níveis
+  (igualdade > palavra inteira > raiz por substring, via _RAIZES). Só
+  aceita cabeçalho que reconheça a DESCRIÇÃO + 1 coluna; senão fallback
+  posicional. Varre TODAS as abas (1ª pode ser capa) e pula linhas de
+  título. Coluna "Total"/"Valor Total" do arquivo é ignorada (recalculada).
+  Erro mostra o cabeçalho lido. Testes: 60 (+4). branch=2e869c9, main=4ab2b13.
+- ⚠️ GOTCHA GRAVE DO AMBIENTE: entre turnos o repo local FOI REBOBINADO —
+  git HEAD voltou p/ base antiga (76ea011/18558cc) SEM o commit já pushado
+  (41a1b69, fix das APIs), embora os ARQUIVOS em disco ainda tivessem as
+  edições. Um commit "por cima" gerou histórico divergente e push rejeitado
+  (non-fast-forward). SOLUÇÃO que funcionou: tratar github como verdade —
+  `git fetch <URL> main <branch>`, recriar branch a partir do SHA REAL do
+  github (git checkout -B branch 41a1b69), `git cherry-pick <meu_commit>`,
+  push ff; refazer main = checkout -B main <sha_github> + merge + push.
+  SEMPRE conferir `git ls-remote <URL>` (github real) — o remote "origin"
+  aponta p/ relay 127.0.0.1 e pode divergir. NUNCA force-push por cima.
+
 ## Planilha orçamentária + import XLSX (2026-07-08)
 
 - Campo único "valor estimado" virou PLANILHA de itens (código,
