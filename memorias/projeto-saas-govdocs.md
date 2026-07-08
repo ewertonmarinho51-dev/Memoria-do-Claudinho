@@ -160,6 +160,24 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   ANTES do 1o at.run() (não via _iniciar), evitando render do data_editor
   (ver test_sequencia/test_edicao reescritos). 52 testes. main=76ea011.
 
+## Diagnóstico de falha das APIs (2026-07-08)
+
+- Usuário relatou "as duas APIs (GPT e Google) com problema". Sem acesso
+  vivo daqui (egress bloqueia api.openai.com). Causa não era o código de
+  seleção de motor — era a MENSAGEM DE ERRO genérica escondendo o motivo
+  real (401/404/429/região).
+- FIX: _traduzir_erro(exc, motor) agora é por engine — aponta chave certa
+  (OPENAI_API_KEY vs GOOGLE_API_KEY), modelo (OPENAI_MODEL vs GEMINI_MODEL)
+  e painel de cada provedor; cobre insufficient_quota, invalid_api_key,
+  model_not_found, billing, rate limit, unsupported. ErroGeracaoIA carrega
+  .detalhe (erro bruto = motor + modelo + tipo + msg). UI: expander
+  "Detalhes técnicos" na tela de geração + no aviso de fallback.
+- LEMBRAR: _ler_chave lê db.obter_config (painel admin/config_app) ANTES
+  de secrets/env. Chave errada salva no painel do admin sobrepõe a correta
+  do secrets — suspeito nº1 quando "as duas falham juntas".
+- 56 testes (+4). main = 4583c4a. AGUARDANDO: usuário rodar geração e
+  colar o "Detalhes técnicos" p/ confirmar causa (chave? modelo? cota?).
+
 ## Pendências / próximos passos
 
 - [ ] Usuário testar geração real com chave OpenAI na máquina dele
