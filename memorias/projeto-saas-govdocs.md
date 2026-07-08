@@ -122,6 +122,30 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## Padrão dos processos anteriores + memorando inicial (2026-07-08)
+
+- Pedido: IA gerar no PADRÃO dos processos já feitos (estrutura, redação,
+  cláusulas padrão/imutáveis), mas SEM copiar dados concretos de outro
+  processo — dados só do processo atual. + campo pro memorando/ofício que
+  inicia a demanda.
+- FIX: (1) config.CAMPOS_FORMULARIO ganhou "memorando" (1º campo, area).
+  steps: expander antes do form com file_uploader (pdf/docx/txt/md) que
+  extrai via rag.extrair_texto → dados["memorando"] (jsonb, sem migração).
+  prompts.montar_prompt injeta bloco próprio "MEMORANDO/OFÍCIO DO PROCESSO
+  ATUAL"; formatar_dados_formulario PULA memorando (não duplica).
+  (2) SYSTEM_PROMPT_BASE reforçado: "pegue como modelo e adapte ao novo
+  objeto" (reaproveita só estrutura/linguagem/cláusulas), HIERARQUIA DE
+  FONTES (1º lei/manuais, 2º processo atual, 3º padrão anteriores),
+  compacidade permitida, faltou dado→[PREENCHER] nunca inventar/copiar.
+  (3) rag.montar_bloco_referencias reformulado com o mesmo enquadramento.
+- GOTCHA AppTest (de novo): 2 file_uploaders antes do st.form quebram a
+  snapshot na transição form→etapa1 (KeyError $$ID-...). Solução: campos do
+  form SEM key (senão gotcha key+value do Streamlit: upload/retomar não
+  atualiza o campo) + test_app._iniciar_com_formulario passou a SEMEAR
+  estado (dados+etapa=1) em vez de dirigir o form. Validação do envio fica
+  em test_formulario_valida_campos_obrigatorios.
+- Testes: 90 (novo tests/test_prompts.py). main=e96f1cb.
+
 ## gpt-5-mini resposta vazia -> troca de modelo (2026-07-08)
 
 - Usuário: "OpenAI: resposta vazia do modelo" (chamada OK, mas gpt-5-mini
