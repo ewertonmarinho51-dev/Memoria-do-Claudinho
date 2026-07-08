@@ -140,6 +140,26 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - Testes: 46. main = 50e2353. Token do usuário voltou a ter escrita
   (403 anterior era transitório, não rotação).
 
+## Coluna Fonte/Link e links clicáveis (2026-07-08)
+
+- Planilha ganhou coluna opcional 'fonte' (Fonte/Link, LinkColumn com
+  display_text='link') + preserva colunas extras vindas do XLSX
+  (importar_de_xlsx mantém colunas não mapeadas; SINONIMOS inclui fonte/
+  link/url). calcular() e para_markdown() preservam extras. URLs viram
+  [link](url) no markdown (planilha.para_link_markdown, normaliza www->https).
+- EXPORT: links [texto](url) viram hyperlink clicável real — DOCX via
+  w:hyperlink XML (_docx_hyperlink, _docx_runs_ricos, _segmentos_ricos),
+  PDF via fpdf2 markdown=True. Tabelas Markdown no PDF agora são TABELAS
+  REAIS (pdf.table, _pdf_render_tabela) com quebra de texto — corrige
+  estouro de margem com muitas colunas. Prompt instrui preservar links.
+- APPTEST GOTCHA IMPORTANTE: st.data_editor + widgets keyless antes do
+  st.form quebram a snapshot do AppTest (KeyError $$ID-...-None em
+  TextInput/Selectbox.value; acúmulo de estado entre reruns). Por isso o
+  expander manual 'Adicionar coluna' foi REMOVIDO (colunas extras vêm do
+  XLSX). Testes que forçam session_state['etapa'] devem SEMEAR o estado
+  ANTES do 1o at.run() (não via _iniciar), evitando render do data_editor
+  (ver test_sequencia/test_edicao reescritos). 52 testes. main=76ea011.
+
 ## Pendências / próximos passos
 
 - [ ] Usuário testar geração real com chave OpenAI na máquina dele
