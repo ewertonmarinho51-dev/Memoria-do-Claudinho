@@ -122,6 +122,20 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## gpt-5-mini resposta vazia -> troca de modelo (2026-07-08)
+
+- Usuário: "OpenAI: resposta vazia do modelo" (chamada OK, mas gpt-5-mini
+  devolveu content vazio — modelo de raciocínio gastou o orçamento de
+  tokens pensando; finish_reason=length). O código só trocava de modelo em
+  erro de modelo/404, então NÃO caía p/ gpt-4o-mini e ia direto ao Gemini.
+  (O "tentados: gpt-5-mini, gpt-4o-mini,..." era só a lista de candidatos.)
+- FIX: exceção llm._RespostaVazia + _trocar_de_modelo() = erro de modelo OU
+  vazia → tenta próximo candidato (gpt-4o-mini/gpt-4o não são de raciocínio,
+  respondem). Vale p/ OpenAI e Gemini. reasoning_effort gpt-5 "low"->"minimal"
+  (sobra token p/ texto); série o mantém "low". detalhe agora lista modelos
+  REALMENTE tentados. _traduzir_erro tem ramo p/ "vazia".
+- Testes: 85. main=dd1845d.
+
 ## Limpeza de descrições de PDF (2026-07-08)
 
 - Descrições da planilha do usuário vinham de PDF com espaços no meio de
