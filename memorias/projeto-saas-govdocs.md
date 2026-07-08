@@ -122,6 +122,24 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   e secrets.toml.*. NÃO usar `mv secrets.toml *.bak` + git add -A.
 - Migração 0005 PENDENTE de aplicação pelo usuário no SQL Editor.
 
+## Planilha orçamentária + import XLSX (2026-07-08)
+
+- Campo único "valor estimado" virou PLANILHA de itens (código,
+  descrição, unidade, quantidade, valor unitário) via st.data_editor
+  dinâmico. valor_total por item e VALOR GLOBAL (soma) calculados; o
+  global alimenta dados["valor_estimado"] (fluxo a jusante intacto).
+  Módulo src/planilha.py (calcular, formatar_moeda BR, para_markdown).
+  A planilha entra no prompt como tabela Markdown → IA reproduz na
+  estimativa de valor. AppTest não dirige data_editor: testes semeiam
+  session_state["dados"]["itens"].
+- IMPORT XLSX: planilha.importar_de_xlsx (openpyxl) detecta cabeçalho por
+  sinônimos sem acento (SINONIMOS), fallback posicional, _num aceita
+  moeda BR "1.234,56". Expander no form: baixar modelo_xlsx() + upload
+  que re-semeia a tabela (key do data_editor = _xlsx_lido para forçar
+  reload). openpyxl no requirements.
+- Testes: 46. main = 50e2353. Token do usuário voltou a ter escrita
+  (403 anterior era transitório, não rotação).
+
 ## Pendências / próximos passos
 
 - [ ] Usuário testar geração real com chave OpenAI na máquina dele
