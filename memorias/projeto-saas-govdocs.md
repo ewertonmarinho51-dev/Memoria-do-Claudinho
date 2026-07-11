@@ -312,3 +312,18 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
       OpenAI; considerar repo privado de novo (decisão dele: público).
 - [ ] Futuro possível: Supabase Auth multiusuário; instalar claude-mem
       completo na máquina local do usuário (npx claude-mem install).
+
+## Origem das chaves + push via patch (2026-07-11)
+
+- llm.origem_chave + indicador na aba Chaves de IA (prioridade: painel >
+  sidebar > secrets > env). Chaves novas do usuário postas em
+  .streamlit/secrets.toml local (gitignored). Chave "Gemini" fornecida
+  (AQ.Ab8...) tem formato suspeito (não é AIzaSy... do AI Studio) — avisado.
+- SESSÃO PERDEU ESCRITA NO GITHUB (403 em token do usuário, relay e app;
+  2 tokens novos também falharam — bloqueio do ambiente, não do token).
+  Solução: git format-patch enviado ao usuário, aplicado na máquina dele
+  com git am + push próprio. main=2e13e55 (92 testes ok, verificado).
+- Assinatura de commits: /tmp/code-sign só foi instalado 2026-07-11 15:12;
+  commits anteriores ficam Unverified (cosmético, decisão registrada).
+- Tokens ghp_* expostos em chat: usuário orientado a revogar TODOS e
+  rotacionar chaves OpenAI/Gemini ao fim do desenvolvimento.
