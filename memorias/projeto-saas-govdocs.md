@@ -327,3 +327,26 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   commits anteriores ficam Unverified (cosmético, decisão registrada).
 - Tokens ghp_* expostos em chat: usuário orientado a revogar TODOS e
   rotacionar chaves OpenAI/Gemini ao fim do desenvolvimento.
+
+## Motor de geração no padrão institucional (2026-07-12)
+
+- Usuário enviou ZIPs: docs GERADOS vs docs MANUAIS aprovados (Paragominas).
+  Medição: manuais Times 12, DFD 4.804/ETP 12.541/TR 11.412 palavras,
+  9/18/17 cláusulas, numeração 1.1.1.; gerados Helvetica 11, 5x menores,
+  texto FORA da margem direita, 6-28 [PREENCHER] no final.
+- CAUSAS: prompt com estrutura própria (≠ padrão da casa) + "enxuto" +
+  reasoning minimal; export fpdf2 desenhando direto (Helvetica, sem estilos).
+- FIX (commit 1f96200, local — push ainda 403, patch enviado ao usuário):
+  perfis.py (estrutura/metas por cláusula extraídas dos manuais, config
+  central); prompts via perfis + proibição de mencionar mecânica interna;
+  export.py DOCX com estilos GovDocs (Times 12/1,5/6pt/justif/keep_next/
+  tblHeader/cantSplit; run.bold só quando True senão anula estilo!) e PDF
+  via DOCX->LibreOffice (fallback fpdf2 Times; motor_pdf()); validacao.py
+  (PREENCHER/[[TABELA_ITENS]]/menções internas BLOQUEIAM download; avisos
+  numeração/raso/cláusula ausente); llm.registrar_geracao (tokens/req-id/
+  duração/fallback, log+sessão); Gemini 16384; reasoning low.
+- GOTCHA ambiente: container só tinha libreoffice-core (sem writer →
+  "source file could not be loaded"); apt install libreoffice-writer
+  resolveu. Streamlit Cloud ok (packages.txt=libreoffice completo).
+- 111 testes. Pendências/backlog: edital sem manual de referência; Mapa
+  de Riscos como doc próprio; regeneração por cláusula (JSON estruturado).
