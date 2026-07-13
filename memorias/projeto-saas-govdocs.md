@@ -464,3 +464,67 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   aplicar 0004/0005/0006 se ainda não aplicadas + 0007. Próxima fase:
   3 (templates versionados + catálogo de cláusulas — textos SÓ vindos
   de documentos aprovados do usuário).
+
+## Correção automática de documentos (pacote v1 — branch correcao-automatica)
+
+- SESSÃO 2026-07-13 (cont.): implementadas as 7 ETAPAS do
+  pacote_correcao_automatica_documentos_v1 (upload do usuário; 39
+  arquivos) na branch `correcao-automatica` do projeto-saas (commits
+  56aeed4..8d300f4). Ciclo: auditoria → corretor por patches →
+  aplicação determinística → NOVA auditoria → aprovação/bloqueio.
+  Migrações 0006/0007 JÁ aplicadas no Supabase; a 0008 (revisoes)
+  está criada no repo e AINDA PENDENTE de aplicar no SQL Editor.
+- MÓDULOS NOVOS (todos puros, flags só no orquestrador/UI):
+  - src/blocos.py: Markdown → blocos endereçáveis (path estável
+    `doc/clausula/N/i`, hash SHA-256, tabela = 1 bloco), snapshot
+    versionado do bundle, diff estrutural, localizar_bloco por tokens
+    com desempate pela janela CENTRAL do trecho (o contexto de ±40
+    chars do validador não pode apontar o bloco vizinho).
+  - src/achados.py: envolve validacao.py (INTACTO) → findings
+    audit-report (escopo permitido/bloqueado, gravidade, regra,
+    fontes, autoCorrectable, camposRequeridos de [PREENCHER]).
+    Sem escopo localizável = não corrigível. flag_achados_estruturados.
+  - src/corretor.py: prompt restrito aos blocos do escopo + fontes do
+    formulário; devolve APENAS operações; validar_plano rejeita tudo
+    (finding não autorizado, path fora/bloqueado, >30 ops, fato sem
+    fonte, hash divergente); 2 tentativas técnicas com feedback; flag
+    flag_corretor_shadow (gera/loga/persiste SEM aplicar, 1x por hash).
+  - src/patches.py: aplicador transacional — hash de origem,
+    revalidação, FIXED_LOCKED (dfd 9, etp 16 = EQUIPE DE PLANEJAMENTO)
+    e FIXED_PARAMETERIZED (dfd 8 PERÍODO: só números/valores/datas/%,
+    prosa comparada por esqueleto), diff pós com escopo por CLÁUSULA e
+    orçamento 25% dos blocos. perfis.clausulas_fixas() é a fonte.
+  - src/ciclo.py: máquina de estados do pacote; máx 3 ciclos; falha =
+    estado explícito (REVIEW_FAILED/CORRECTION_FAILED); dado ausente →
+    WAITING_REQUIRED_DATA pedindo SÓ o campo; auditoria semântica IA
+    opcional (flag_reauditoria; CRITICAL bloqueia; nunca autoriza
+    patch); executar_com_persistencia = job em `revisoes` com
+    idempotency key ciclo-{processo}-{hash} (retomada sem repetir IA;
+    tenant conferido em revisao_do_tenant).
+  - src/ui/revisao.py: tela nova (flag_tela_progresso) com as 5 etapas
+    do pacote + form pontual de dado ausente (aplicar_dado_pontual
+    substitui [PREENCHER: campo] por código) + retry (reabre job) +
+    saída "usar a revisão manual". Gate: emissao_liberada()
+    (flag_gate_emissao) exige APPROVED para o hash ATUAL do bundle.
+  - llm.chamar_ia_texto: chamada genérica (mesmos motores/fallback/
+    registro em geracoes com finalidade 'corretor'/'auditor').
+- FLAGS (config_app, todas default OFF; toggles na aba Revisão do
+  admin): achados_estruturados, corretor_shadow, correcao_automatica,
+  reauditoria, tela_progresso, gate_emissao. Tudo OFF = app idêntico
+  (teste test_flag_off_mantem_a_tela_antiga_de_bloqueio garante).
+  Ordem de ativação: aplicar 0008 → Etapa 1 → shadow (3) → aplicação
+  (4/5) → tela (6) → gate (7). Rollback = desligar a flag da etapa.
+- TESTES: 219 passando (61 novos: test_blocos, test_achados,
+  test_diff_revisoes, test_corretor, test_patches, test_ciclo,
+  test_revisao_ui, test_gate_emissao). Cobrem T01-T20 do pacote
+  (ver 07_TESTES/test-cases.json). Única falha local: LibreOffice/
+  Helvetica pré-existente do container (CI verde).
+- GOTCHAS aprendidos: (1) variável local `achados` em render_sucesso
+  sombreava o módulo — renomeada p/ achados_brutos; (2) snapshot_bundle
+  NÃO filtra por DOCUMENTOS (quebrava docs de teste); (3) o proxy git
+  desta sessão BLOQUEIA force-push (amend de mensagem já pushada não
+  sobe — não amendar após push); (4) orçamento de 25% estoura em docs
+  minúsculos de teste (passar max_proporcao_blocos explícito).
+- PENDENTE: aplicar 0008 no SQL Editor; mergear branch
+  correcao-automatica → main (PR); ligar flags em ordem; decisão
+  Supabase Auth continua aberta.
