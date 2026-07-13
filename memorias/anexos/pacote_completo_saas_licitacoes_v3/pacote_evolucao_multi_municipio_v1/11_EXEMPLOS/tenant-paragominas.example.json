@@ -1,0 +1,27 @@
+{
+  "tenant": {
+    "id": "tenant-paragominas",
+    "code": "PARAGOMINAS",
+    "legalName": "Município de Paragominas",
+    "status": "ACTIVE",
+    "timezone": "America/Belem"
+  },
+  "secretariats": [
+    {
+      "id": "sec-adm",
+      "tenantId": "tenant-paragominas",
+      "name": "Secretaria Municipal de Administração",
+      "acronym": "SEMAD",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "sec-infra",
+      "tenantId": "tenant-paragominas",
+      "name": "Secretaria Municipal de Infraestrutura",
+      "acronym": "SEMINFRA",
+      "status": "ACTIVE",
+      "brandingProfileId": "brand-seminfra-v1"
+    }
+  ],
+  "note": "Exemplo estrutural. Dados oficiais devem ser confirmados no cadastro real."
+}

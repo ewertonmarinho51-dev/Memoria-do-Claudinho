@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/audit-report.schema.json",
+  "title": "AuditReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "auditId",
+    "bundleId",
+    "status",
+    "score",
+    "findings",
+    "blockingFindingIds",
+    "summary",
+    "metadata"
+  ],
+  "properties": {
+    "auditId": {
+      "type": "string"
+    },
+    "bundleId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "APPROVED",
+        "PATCH_REQUIRED",
+        "INPUT_REQUIRED",
+        "SYSTEM_FAILURE"
+      ]
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "findingId",
+          "severity",
+          "category",
+          "ruleId",
+          "description",
+          "autoPatchable",
+          "evidence"
+        ],
+        "properties": {
+          "findingId": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "INFO",
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ]
+          },
+          "category": {
+            "enum": [
+              "SOURCE",
+              "LEGAL",
+              "STRUCTURE",
+              "TECHNICAL",
+              "CROSS_DOCUMENT",
+              "CALCULATION",
+              "LANGUAGE",
+              "FORMATTING",
+              "RENDERING",
+              "SECURITY",
+              "SYSTEM"
+            ]
+          },
+          "ruleId": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "clauseId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "currentValue": {},
+          "expectedCondition": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "autoPatchable": {
+            "type": "boolean"
+          },
+          "requiresInput": {
+            "type": "boolean"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "allowedPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommendedAction": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "blockingFindingIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "promptVersion",
+        "modelPolicyVersion",
+        "createdAt"
+      ],
+      "properties": {
+        "promptVersion": {
+          "type": "string"
+        },
+        "modelPolicyVersion": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

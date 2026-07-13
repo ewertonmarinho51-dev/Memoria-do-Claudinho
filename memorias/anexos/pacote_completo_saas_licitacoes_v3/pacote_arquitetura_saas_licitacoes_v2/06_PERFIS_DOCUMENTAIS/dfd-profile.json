@@ -1,0 +1,143 @@
+{
+  "documentType": "DFD",
+  "profileVersion": "2.0.0",
+  "status": "REFERENCE_BASELINE",
+  "notes": "Faixas extraídas como referência de densidade dos documentos manuais analisados.",
+  "clauses": [
+    {
+      "stableId": "dfd.general",
+      "title": "Informações gerais",
+      "requirement": "REQUIRED",
+      "complexity": "LOW",
+      "minBlocks": 3,
+      "targetBlocks": 4,
+      "maxBlocks": 5,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.justification",
+      "title": "Justificativa da demanda",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 8,
+      "targetBlocks": 10,
+      "maxBlocks": 12,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.need",
+      "title": "Necessidade ou oportunidade",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 7,
+      "targetBlocks": 8,
+      "maxBlocks": 10,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.proposed.solution",
+      "title": "Solução inicialmente proposta",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 8,
+      "targetBlocks": 10,
+      "maxBlocks": 13,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.quantities",
+      "title": "Descrição e estimativa de quantidades",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 6,
+      "targetBlocks": 9,
+      "maxBlocks": 12,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.dimensioning",
+      "title": "Dimensionamento da prestação",
+      "requirement": "CONDITIONAL",
+      "complexity": "HIGH",
+      "minBlocks": 5,
+      "targetBlocks": 6,
+      "maxBlocks": 8,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.value",
+      "title": "Estimativa preliminar do valor",
+      "requirement": "CONDITIONAL",
+      "complexity": "MEDIUM",
+      "minBlocks": 4,
+      "targetBlocks": 5,
+      "maxBlocks": 7,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.period",
+      "title": "Período pretendido",
+      "requirement": "REQUIRED",
+      "complexity": "LOW",
+      "minBlocks": 1,
+      "targetBlocks": 2,
+      "maxBlocks": 3,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "dfd.team",
+      "title": "Equipe de planejamento",
+      "requirement": "REQUIRED",
+      "complexity": "LOW",
+      "minBlocks": 1,
+      "targetBlocks": 2,
+      "maxBlocks": 3,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    }
+  ]
+}

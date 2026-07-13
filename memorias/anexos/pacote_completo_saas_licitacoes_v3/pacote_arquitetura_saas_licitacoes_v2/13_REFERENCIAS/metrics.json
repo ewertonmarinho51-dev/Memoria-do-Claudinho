@@ -1,0 +1,55 @@
+{
+  "manual": {
+    "DFD": {
+      "pages": 12,
+      "wordsExtracted": 5136,
+      "dominantFont": "Times-Roman",
+      "dominantSizePt": 12
+    },
+    "ETP": {
+      "pages": 32,
+      "wordsExtracted": 13555,
+      "dominantFont": "Times-Roman",
+      "dominantSizePt": 12
+    },
+    "RISK_MAP": {
+      "pages": 4,
+      "wordsExtracted": 1060,
+      "dominantFont": "NimbusRoman-Regular",
+      "dominantSizePt": 11
+    },
+    "TR": {
+      "pages": 24,
+      "wordsExtracted": 12379,
+      "dominantFont": "Times-Roman",
+      "dominantSizePt": 12
+    }
+  },
+  "generated": {
+    "DFD": {
+      "pages": 3,
+      "wordsExtracted": 655,
+      "dominantFont": "Helvetica",
+      "dominantSizePt": 11
+    },
+    "ETP": {
+      "pages": 8,
+      "wordsExtracted": 1263,
+      "dominantFont": "Helvetica",
+      "dominantSizePt": 11
+    },
+    "TR": {
+      "pages": 9,
+      "wordsExtracted": 1027,
+      "dominantFont": "Helvetica",
+      "dominantSizePt": 11
+    },
+    "NOTICE": {
+      "pages": 8,
+      "wordsExtracted": 1724,
+      "dominantFont": "Helvetica",
+      "dominantSizePt": 11
+    }
+  },
+  "note": "Contagens obtidas por extração automática e sujeitas a pequenas diferenças em relação a contadores de editores."
+}

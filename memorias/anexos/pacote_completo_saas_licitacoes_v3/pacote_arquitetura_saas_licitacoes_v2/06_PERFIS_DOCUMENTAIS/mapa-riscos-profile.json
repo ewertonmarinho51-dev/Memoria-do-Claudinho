@@ -1,0 +1,83 @@
+{
+  "documentType": "RISK_MAP",
+  "profileVersion": "2.0.0",
+  "status": "REFERENCE_BASELINE",
+  "notes": "",
+  "clauses": [
+    {
+      "stableId": "risk.identification",
+      "title": "Identificação e escopo",
+      "requirement": "REQUIRED",
+      "complexity": "LOW",
+      "minBlocks": 2,
+      "targetBlocks": 3,
+      "maxBlocks": 5,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "risk.method",
+      "title": "Metodologia e escalas",
+      "requirement": "REQUIRED",
+      "complexity": "MEDIUM",
+      "minBlocks": 2,
+      "targetBlocks": 4,
+      "maxBlocks": 6,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "risk.registry",
+      "title": "Registro de riscos",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 1,
+      "targetBlocks": 2,
+      "maxBlocks": 4,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": "A densidade é medida também por quantidade de riscos. Esperado: 8 a 20 riscos em objetos complexos."
+    },
+    {
+      "stableId": "risk.treatment",
+      "title": "Plano de tratamento",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 5,
+      "targetBlocks": 8,
+      "maxBlocks": 12,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "risk.monitoring",
+      "title": "Monitoramento e responsáveis",
+      "requirement": "REQUIRED",
+      "complexity": "MEDIUM",
+      "minBlocks": 2,
+      "targetBlocks": 4,
+      "maxBlocks": 6,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    }
+  ]
+}

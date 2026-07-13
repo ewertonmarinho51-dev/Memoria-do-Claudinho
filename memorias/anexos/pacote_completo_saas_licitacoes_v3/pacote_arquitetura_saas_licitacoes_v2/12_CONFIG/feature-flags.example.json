@@ -1,0 +1,12 @@
+{
+  "canonical_documents_v2": false,
+  "deterministic_context_builder": false,
+  "rag_trace_v2": false,
+  "structured_generation_v2": false,
+  "docx_renderer_v2": false,
+  "pdf_preflight_v2": false,
+  "bundle_auditor_shadow": true,
+  "bundle_auditor_gate": false,
+  "incremental_patch_v2": false,
+  "automatic_issuance_gate": false
+}

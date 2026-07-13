@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/clause-profile.schema.json",
+  "title": "ClauseProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "documentType",
+    "profileVersion",
+    "clauses"
+  ],
+  "properties": {
+    "documentType": {
+      "type": "string"
+    },
+    "profileVersion": {
+      "type": "string"
+    },
+    "clauses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stableId",
+          "title",
+          "requirement",
+          "complexity",
+          "minBlocks",
+          "targetBlocks",
+          "maxBlocks"
+        ],
+        "properties": {
+          "stableId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "requirement": {
+            "enum": [
+              "REQUIRED",
+              "CONDITIONAL",
+              "OPTIONAL",
+              "PROHIBITED"
+            ]
+          },
+          "complexity": {
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH"
+            ]
+          },
+          "minBlocks": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "targetBlocks": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxBlocks": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "requiresTable": {
+            "type": "boolean"
+          },
+          "requiresLegalBasis": {
+            "type": "boolean"
+          },
+          "requiredSourceModes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

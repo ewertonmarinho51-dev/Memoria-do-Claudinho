@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/process-context.schema.json",
+  "title": "ProcessContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "processId",
+    "organization",
+    "requestingDepartment",
+    "object",
+    "facts",
+    "sourceIds",
+    "inputSnapshotHash"
+  ],
+  "properties": {
+    "processId": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "requestingDepartment": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "object": {
+      "type": "object",
+      "required": [
+        "summary",
+        "category"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "nature": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "factId",
+          "label",
+          "value",
+          "sourceIds",
+          "status"
+        ],
+        "properties": {
+          "factId": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "value": {},
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "CONFIRMED",
+              "INFERRED",
+              "PENDING",
+              "CONFLICTING"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "quantities": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "prices": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "sourceIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "pendingFields": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "inputSnapshotHash": {
+      "type": "string"
+    },
+    "capturedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

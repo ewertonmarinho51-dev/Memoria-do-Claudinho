@@ -1,0 +1,46 @@
+{
+  "processId": "PROC-EXEMPLO-001",
+  "organization": {
+    "id": "ORG-001",
+    "name": "Município Exemplo"
+  },
+  "requestingDepartment": {
+    "id": "SEC-ADM",
+    "name": "Secretaria Municipal de Administração"
+  },
+  "object": {
+    "summary": "Aquisição de materiais institucionais para atendimento de atividades administrativas",
+    "category": "GOODS",
+    "nature": "COMMON"
+  },
+  "facts": [
+    {
+      "factId": "need.01",
+      "label": "Necessidade",
+      "value": "Reposição de estoque para continuidade das atividades administrativas",
+      "sourceIds": [
+        "SRC-MEMO-001"
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "factId": "deadline.01",
+      "label": "Prazo desejado",
+      "value": "Até 60 dias após a ordem de fornecimento",
+      "sourceIds": [
+        "SRC-FORM-001"
+      ],
+      "status": "CONFIRMED"
+    }
+  ],
+  "quantities": [],
+  "prices": [],
+  "risks": [],
+  "sourceIds": [
+    "SRC-MEMO-001",
+    "SRC-FORM-001"
+  ],
+  "pendingFields": [],
+  "inputSnapshotHash": "sha256:example",
+  "capturedAt": "2026-07-12T19:00:00-03:00"
+}

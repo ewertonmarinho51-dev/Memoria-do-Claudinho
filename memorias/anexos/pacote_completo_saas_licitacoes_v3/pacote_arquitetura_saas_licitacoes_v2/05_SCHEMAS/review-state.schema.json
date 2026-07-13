@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/review-state.schema.json",
+  "title": "ReviewState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "processId",
+    "bundleId",
+    "state",
+    "revision",
+    "events"
+  ],
+  "properties": {
+    "processId": {
+      "type": "string"
+    },
+    "bundleId": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "eventId",
+          "type",
+          "createdAt"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorType": {
+            "enum": [
+              "USER",
+              "SYSTEM",
+              "MODEL"
+            ]
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}

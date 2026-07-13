@@ -1,0 +1,59 @@
+{
+  "profileVersion": "2.0.0",
+  "page": {
+    "size": "A4",
+    "orientation": "portrait",
+    "marginsMm": {
+      "top": 25,
+      "right": 25,
+      "bottom": 20,
+      "left": 30
+    }
+  },
+  "body": {
+    "fontFamily": "Times New Roman",
+    "fontSizePt": 12,
+    "lineSpacing": 1.5,
+    "spaceAfterPt": 6,
+    "alignment": "JUSTIFIED"
+  },
+  "clauseTitle": {
+    "fontFamily": "Times New Roman",
+    "fontSizePt": 12,
+    "bold": true,
+    "keepWithNext": true,
+    "spaceBeforePt": 12,
+    "spaceAfterPt": 6
+  },
+  "numbering": {
+    "levels": 4,
+    "format": [
+      "1.",
+      "1.1.",
+      "1.1.1.",
+      "a)"
+    ]
+  },
+  "tables": {
+    "fontFamily": "Times New Roman",
+    "defaultFontSizePt": 10,
+    "repeatHeader": true,
+    "fitToPageWidth": true,
+    "allowRowSplit": false
+  },
+  "pagination": {
+    "avoidWidowOrphan": true,
+    "keepSignatureBlockTogether": true
+  },
+  "forbiddenFonts": [
+    "Helvetica"
+  ],
+  "finalChecks": [
+    "NO_CLIPPED_TEXT",
+    "NO_OVERLAP",
+    "NO_PLACEHOLDERS",
+    "HEADERS_OK",
+    "FOOTERS_OK",
+    "DOCX_PDF_TEXT_PARITY"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "minimumScore": 90,
+  "blockingSeverities": [
+    "HIGH",
+    "CRITICAL"
+  ],
+  "maxPatchCycles": 2,
+  "automaticIssuanceAfterPass": true,
+  "requireDeterministicChecks": true,
+  "requireRenderPass": true,
+  "requireSourceCoverage": true,
+  "allowHumanOverride": false,
+  "displayDisclaimer": "Aprovado pela auditoria automatizada. A assinatura e a responsabilidade permanecem com os agentes competentes."
+}

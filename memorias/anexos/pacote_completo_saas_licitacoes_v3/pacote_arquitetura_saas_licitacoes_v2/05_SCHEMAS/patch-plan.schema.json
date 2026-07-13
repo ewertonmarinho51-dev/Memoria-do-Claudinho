@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/patch-plan.schema.json",
+  "title": "PatchPlan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "patchId",
+    "bundleId",
+    "baseVersions",
+    "status",
+    "operations",
+    "unpatchableFindings",
+    "changedPaths"
+  ],
+  "properties": {
+    "patchId": {
+      "type": "string"
+    },
+    "bundleId": {
+      "type": "string"
+    },
+    "baseVersions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "documentId",
+          "version",
+          "contentHash"
+        ],
+        "properties": {
+          "documentId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "contentHash": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "UNPATCHABLE_INPUT_REQUIRED",
+        "REJECTED"
+      ]
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "findingId",
+          "documentId",
+          "op",
+          "path",
+          "expectedOldHash",
+          "value",
+          "sourceIds"
+        ],
+        "properties": {
+          "findingId": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "add",
+              "replace",
+              "remove"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "expectedOldHash": {
+            "type": "string"
+          },
+          "value": {},
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unpatchableFindings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "changedPaths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  }
+}

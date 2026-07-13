@@ -1,0 +1,41 @@
+{
+  "auditId": "AUD-001",
+  "bundleId": "BND-001",
+  "status": "PATCH_REQUIRED",
+  "score": 86,
+  "findings": [
+    {
+      "findingId": "F-001",
+      "severity": "HIGH",
+      "category": "CROSS_DOCUMENT",
+      "ruleId": "QTY_MATCH_001",
+      "documentId": "DOC-TR-001",
+      "clauseId": "tr.object",
+      "description": "O quantitativo do item 1 diverge do ETP.",
+      "currentValue": 120,
+      "expectedCondition": "Deve corresponder ao quantitativo confirmado no ETP.",
+      "autoPatchable": true,
+      "requiresInput": false,
+      "evidence": [
+        {
+          "documentId": "DOC-ETP-001",
+          "path": "/clauses/6/tables/0/rows/0/quantity",
+          "value": 150
+        }
+      ],
+      "allowedPaths": [
+        "/clauses/0/tables/0/rows/0/quantity"
+      ],
+      "recommendedAction": "Substituir 120 por 150 no TR."
+    }
+  ],
+  "blockingFindingIds": [
+    "F-001"
+  ],
+  "summary": "Há uma divergência material de quantitativo.",
+  "metadata": {
+    "promptVersion": "auditor-2.0.0",
+    "modelPolicyVersion": "model-policy-1.0.0",
+    "createdAt": "2026-07-12T19:30:00-03:00"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResolvedInstitutionalContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant",
+    "secretariat",
+    "template",
+    "branding",
+    "appliedPolicies",
+    "resolvedClauses",
+    "signatureSlots",
+    "resolvedAt",
+    "contextHash"
+  ],
+  "properties": {
+    "tenant": {
+      "type": "object"
+    },
+    "secretariat": {
+      "type": "object"
+    },
+    "template": {
+      "type": "object"
+    },
+    "branding": {
+      "type": "object"
+    },
+    "appliedPolicies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "resolvedClauses": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "signatureSlots": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "resolvedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contextHash": {
+      "type": "string",
+      "minLength": 16
+    }
+  }
+}

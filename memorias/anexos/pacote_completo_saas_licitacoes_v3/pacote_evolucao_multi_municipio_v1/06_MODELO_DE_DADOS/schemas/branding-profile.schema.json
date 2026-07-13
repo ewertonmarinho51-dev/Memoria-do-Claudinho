@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BrandingProfile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenantId",
+    "scope",
+    "name",
+    "version",
+    "status",
+    "settings"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "secretariatId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "PLATFORM",
+        "TENANT",
+        "SECRETARIAT",
+        "DOCUMENT_TYPE"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "APPROVED",
+        "PUBLISHED",
+        "RETIRED"
+      ]
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "logoAssetId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "secondaryLogoAssetId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "headerText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "footerText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fontFamily": {
+          "type": "string"
+        },
+        "bodyFontSizePt": {
+          "type": "number"
+        },
+        "lineSpacing": {
+          "type": "number"
+        },
+        "paragraphAfterPt": {
+          "type": "number"
+        },
+        "marginsMm": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "fontFamily",
+        "bodyFontSizePt",
+        "lineSpacing",
+        "paragraphAfterPt"
+      ]
+    },
+    "effectiveFrom": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "effectiveTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

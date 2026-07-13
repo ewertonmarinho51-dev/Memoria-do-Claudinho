@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/generated-document.schema.json",
+  "title": "GeneratedDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "documentId",
+    "processId",
+    "documentType",
+    "version",
+    "status",
+    "title",
+    "clauses",
+    "pendingFields",
+    "sourceCoverage",
+    "generationMetadata"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "documentId": {
+      "type": "string"
+    },
+    "processId": {
+      "type": "string"
+    },
+    "documentType": {
+      "enum": [
+        "DFD",
+        "ETP",
+        "TR",
+        "RISK_MAP",
+        "NOTICE",
+        "CONTRACT",
+        "OTHER"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parentVersion": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "CANDIDATE",
+        "BLOCKED",
+        "VALIDATED",
+        "SUPERSEDED"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "clauses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stableId",
+          "title",
+          "requirement",
+          "complexity",
+          "blocks",
+          "sourceIds",
+          "claims",
+          "contentHash"
+        ],
+        "properties": {
+          "stableId": {
+            "type": "string"
+          },
+          "displayNumber": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "requirement": {
+            "enum": [
+              "REQUIRED",
+              "CONDITIONAL",
+              "OPTIONAL"
+            ]
+          },
+          "complexity": {
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "VERY_HIGH"
+            ]
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "blockId",
+                "type",
+                "text"
+              ],
+              "properties": {
+                "blockId": {
+                  "type": "string"
+                },
+                "type": {
+                  "enum": [
+                    "PARAGRAPH",
+                    "ITEM",
+                    "SUBITEM",
+                    "NOTE",
+                    "TABLE_INTRO"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                },
+                "level": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 6
+                },
+                "sourceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "claimId",
+                "text",
+                "claimType",
+                "sourceIds"
+              ],
+              "properties": {
+                "claimId": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "claimType": {
+                  "enum": [
+                    "MATERIAL_FACT",
+                    "LEGAL_BASIS",
+                    "ANALYSIS",
+                    "INSTITUTIONAL_GUIDANCE"
+                  ]
+                },
+                "sourceIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "contentHash": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "pendingFields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "fieldId",
+          "reason",
+          "blocking"
+        ],
+        "properties": {
+          "fieldId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "blocking": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "sourceCoverage": {
+      "type": "object",
+      "required": [
+        "usedSourceIds",
+        "unsupportedClaimCount"
+      ],
+      "properties": {
+        "usedSourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unsupportedClaimCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "generationMetadata": {
+      "type": "object",
+      "required": [
+        "promptVersion",
+        "modelPolicyVersion",
+        "inputSnapshotHash",
+        "retrievalTraceId"
+      ],
+      "properties": {
+        "promptVersion": {
+          "type": "string"
+        },
+        "modelPolicyVersion": {
+          "type": "string"
+        },
+        "inputSnapshotHash": {
+          "type": "string"
+        },
+        "retrievalTraceId": {
+          "type": "string"
+        },
+        "finishReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

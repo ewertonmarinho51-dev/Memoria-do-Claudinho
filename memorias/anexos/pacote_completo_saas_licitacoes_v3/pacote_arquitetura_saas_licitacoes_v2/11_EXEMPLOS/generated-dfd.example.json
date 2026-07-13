@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "2.0.0",
+  "documentId": "DOC-DFD-001",
+  "processId": "PROC-EXEMPLO-001",
+  "documentType": "DFD",
+  "version": 1,
+  "parentVersion": null,
+  "status": "CANDIDATE",
+  "title": "DOCUMENTO DE FORMALIZAÇÃO DA DEMANDA",
+  "clauses": [
+    {
+      "stableId": "dfd.need",
+      "displayNumber": "2",
+      "title": "DA NECESSIDADE",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "blocks": [
+        {
+          "blockId": "dfd.need.p1",
+          "type": "PARAGRAPH",
+          "text": "A unidade demandante identificou a necessidade de recomposição do estoque, conforme o memorando registrado no processo.",
+          "level": 0,
+          "sourceIds": [
+            "SRC-MEMO-001"
+          ]
+        }
+      ],
+      "tables": [],
+      "sourceIds": [
+        "SRC-MEMO-001"
+      ],
+      "claims": [
+        {
+          "claimId": "claim-001",
+          "text": "Existe necessidade de recomposição do estoque.",
+          "claimType": "MATERIAL_FACT",
+          "sourceIds": [
+            "SRC-MEMO-001"
+          ]
+        }
+      ],
+      "contentHash": "sha256:clause-example"
+    }
+  ],
+  "pendingFields": [],
+  "sourceCoverage": {
+    "usedSourceIds": [
+      "SRC-MEMO-001"
+    ],
+    "unsupportedClaimCount": 0
+  },
+  "generationMetadata": {
+    "promptVersion": "generator-dfd-2.0.0",
+    "modelPolicyVersion": "model-policy-1.0.0",
+    "inputSnapshotHash": "sha256:example",
+    "retrievalTraceId": "RET-001",
+    "finishReason": "completed"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "tenant": {
+    "id": "tenant-paragominas",
+    "version": 1
+  },
+  "secretariat": {
+    "id": "sec-infra",
+    "version": 1
+  },
+  "template": {
+    "id": "tr-template",
+    "version": 3
+  },
+  "branding": {
+    "profileId": "brand-seminfra-v1",
+    "version": 1,
+    "resolvedSources": {
+      "logo": "SECRETARIAT",
+      "footer": "TENANT"
+    }
+  },
+  "appliedPolicies": [
+    {
+      "policyId": "policy-example-001",
+      "version": 1,
+      "result": true
+    }
+  ],
+  "resolvedClauses": [
+    {
+      "clauseCode": "TR_OBLIGATIONS_CONTRACTOR",
+      "version": 4,
+      "mode": "FIXED_LOCKED",
+      "contentHash": "sha256-example"
+    }
+  ],
+  "signatureSlots": [
+    {
+      "code": "ELABORATED_BY",
+      "eligiblePersonIds": [
+        "person-001"
+      ]
+    },
+    {
+      "code": "AGREED_BY_SECRETARY",
+      "eligiblePersonIds": [
+        "person-002"
+      ]
+    }
+  ],
+  "resolvedAt": "2026-07-12T19:00:00-03:00",
+  "contextHash": "sha256-context-example"
+}

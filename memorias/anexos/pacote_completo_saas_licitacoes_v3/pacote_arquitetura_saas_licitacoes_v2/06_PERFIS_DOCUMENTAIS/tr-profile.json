@@ -1,0 +1,218 @@
+{
+  "documentType": "TR",
+  "profileVersion": "2.0.0",
+  "status": "REFERENCE_BASELINE",
+  "notes": "",
+  "clauses": [
+    {
+      "stableId": "tr.object",
+      "title": "Objeto",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 10,
+      "targetBlocks": 15,
+      "maxBlocks": 20,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.basis",
+      "title": "Fundamentação",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 6,
+      "targetBlocks": 8,
+      "maxBlocks": 12,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.solution",
+      "title": "Solução como um todo",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 6,
+      "targetBlocks": 8,
+      "maxBlocks": 12,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.requirements",
+      "title": "Requisitos",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 25,
+      "targetBlocks": 36,
+      "maxBlocks": 50,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.execution",
+      "title": "Modelo de execução",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 18,
+      "targetBlocks": 22,
+      "maxBlocks": 28,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.formalization",
+      "title": "Formalização",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 6,
+      "targetBlocks": 8,
+      "maxBlocks": 11,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.acceptance",
+      "title": "Critérios de aceitação e recebimento",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 12,
+      "targetBlocks": 15,
+      "maxBlocks": 20,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.contractor.obligations",
+      "title": "Obrigações da contratada",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 8,
+      "targetBlocks": 10,
+      "maxBlocks": 14,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.administration.obligations",
+      "title": "Obrigações da Administração",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 8,
+      "targetBlocks": 10,
+      "maxBlocks": 14,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.payment",
+      "title": "Medição, liquidação e pagamento",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 15,
+      "targetBlocks": 21,
+      "maxBlocks": 28,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.management",
+      "title": "Gestão e fiscalização",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 18,
+      "targetBlocks": 24,
+      "maxBlocks": 32,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.sanctions",
+      "title": "Sanções",
+      "requirement": "CONDITIONAL",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 16,
+      "targetBlocks": 24,
+      "maxBlocks": 32,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.value",
+      "title": "Estimativa do valor",
+      "requirement": "REQUIRED",
+      "complexity": "MEDIUM",
+      "minBlocks": 6,
+      "targetBlocks": 8,
+      "maxBlocks": 12,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "tr.budget",
+      "title": "Adequação orçamentária",
+      "requirement": "CONDITIONAL",
+      "complexity": "LOW",
+      "minBlocks": 2,
+      "targetBlocks": 4,
+      "maxBlocks": 7,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    }
+  ]
+}

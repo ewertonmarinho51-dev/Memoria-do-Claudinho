@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InstitutionalAssignment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenantId",
+    "personId",
+    "secretariatId",
+    "positionTitle",
+    "roleCodes",
+    "validFrom",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "personId": {
+      "type": "string"
+    },
+    "secretariatId": {
+      "type": "string"
+    },
+    "positionTitle": {
+      "type": "string"
+    },
+    "roleCodes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date"
+    },
+    "validTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "isSubstitute": {
+      "type": "boolean"
+    },
+    "designationReference": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "ACTIVE",
+        "SUSPENDED",
+        "ENDED"
+      ]
+    }
+  }
+}

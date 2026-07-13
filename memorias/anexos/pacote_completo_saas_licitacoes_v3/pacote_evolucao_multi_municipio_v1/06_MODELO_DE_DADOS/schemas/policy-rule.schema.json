@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PolicyRule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenantId",
+    "code",
+    "version",
+    "priority",
+    "status",
+    "condition",
+    "actions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "secretariatId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "code": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "IN_REVIEW",
+        "APPROVED",
+        "PUBLISHED",
+        "RETIRED"
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "description": "AST declarativa com operadores permitidos"
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "INCLUDE_CLAUSE",
+              "EXCLUDE_CLAUSE",
+              "REQUIRE_FIELD",
+              "ADD_VALIDATION",
+              "SELECT_TEMPLATE",
+              "SET_SIGNATURE_SLOT"
+            ]
+          },
+          "target": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parameters": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "effectiveFrom": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "effectiveTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}
