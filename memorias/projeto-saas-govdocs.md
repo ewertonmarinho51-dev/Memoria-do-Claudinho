@@ -421,3 +421,46 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   (normalizar secretarias, vincular usuários, resolver contexto
   automaticamente). Decisão pendente ligada: Supabase Auth vs. auth
   própria atual (PBKDF2). Implementação acontece no repo projeto-saas.
+
+## Fase 2 IMPLEMENTADA: secretarias + contexto da sessão (2026-07-13)
+
+- Feita nesta mesma sessão, logo após arquivar o v3 (repo projeto-saas
+  adicionado à sessão da memória). main=ee170f4 (ff do branch
+  claude/fase-2-secretarias-contexto). 140 testes (24 novos).
+- MIGRAÇÃO 0007 (expand-only, EXIGE 0006 antes): tabela `secretarias`
+  (nome/sigla/ativo + colunas de branding espelhando config_orgaos +
+  padrao + origem_orgao_id p/ backfill idempotente de config_orgaos);
+  usuarios.secretaria_id e processos.secretaria_id (nullable);
+  RPCs buscar_chunks_vetorial/textual RECRIADAS (drop+create; sobrecarga
+  deixaria a chamada de 2 args ambígua no PostgREST) com parâmetro
+  `tenant uuid default tenant-padrão` filtrando documentos_referencia.
+- CÓDIGO atrás da flag `flag_secretarias` (config_app, default OFF;
+  db.flag_ativa lê "flag_<nome>"):
+  - src/contexto.py (novo): contexto_institucional() derivado do VÍNCULO
+    do usuário logado (nunca do form); resolver_identidade(secretarias,
+    secretaria_id) → (identidade, origem) com precedência secretaria >
+    município (padrao=True); identidade_para_exportacao() = flag ON
+    resolve automático, flag OFF devolve None e LOGA a decisão (shadow,
+    logger govdocs.contexto).
+  - auth.entrar(usuario) seta tenant_id da sessão no login; autenticar/
+    listar_usuarios usam select("*") (tolerante a banco sem as colunas
+    novas — login não quebra antes da migração).
+  - steps.render_sucesso: flag ON → timbrado automático com caption da
+    origem (servidor não escolhe); flag OFF → selectbox antigo.
+  - db.salvar_orgao ESPELHA em secretarias (best-effort, silencioso sem
+    a 0007) — aba Identidade continua o único ponto de captura.
+  - admin: aba Secretarias (toggle da flag, criar nome/sigla,
+    ativar/desativar, tornar padrão, vínculo usuário↔secretaria).
+  - rag.buscar_referencias envia tenant e, se o erro citar "tenant"
+    (0007 ausente), repete na assinatura antiga.
+- ORDEM DE ATIVAÇÃO (usuário): aplicar 0006 → 0007 no SQL Editor →
+  conferir secretarias/vínculos no painel → ligar o toggle. Rollback =
+  desligar (colunas ficam inertes).
+- GOTCHA ambiente novo: test_pdf_via_libreoffice_quando_disponivel
+  FALHA neste container (soffice presente mas fontes acham Helvetica
+  em algum span) — pré-existente, sem relação com o diff (falha igual
+  no código intocado); CI não tem LibreOffice, segue verde.
+- Continua pendente: decisão Supabase Auth (não bloqueou a Fase 2);
+  aplicar 0004/0005/0006 se ainda não aplicadas + 0007. Próxima fase:
+  3 (templates versionados + catálogo de cláusulas — textos SÓ vindos
+  de documentos aprovados do usuário).
