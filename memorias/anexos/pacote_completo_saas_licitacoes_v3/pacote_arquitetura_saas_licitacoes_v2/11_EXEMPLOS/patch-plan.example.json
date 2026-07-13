@@ -1,0 +1,30 @@
+{
+  "patchId": "PAT-001",
+  "bundleId": "BND-001",
+  "baseVersions": [
+    {
+      "documentId": "DOC-TR-001",
+      "version": 1,
+      "contentHash": "sha256:tr-v1"
+    }
+  ],
+  "status": "READY",
+  "operations": [
+    {
+      "findingId": "F-001",
+      "documentId": "DOC-TR-001",
+      "op": "replace",
+      "path": "/clauses/0/tables/0/rows/0/quantity",
+      "expectedOldHash": "sha256:value-120",
+      "value": 150,
+      "sourceIds": [
+        "DOC-ETP-001"
+      ],
+      "reason": "Alinhar o TR ao quantitativo aprovado no ETP."
+    }
+  ],
+  "unpatchableFindings": [],
+  "changedPaths": [
+    "DOC-TR-001:/clauses/0/tables/0/rows/0/quantity"
+  ]
+}

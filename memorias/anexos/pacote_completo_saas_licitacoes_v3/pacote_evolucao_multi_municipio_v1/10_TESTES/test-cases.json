@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "cases": [
+    {
+      "id": "MT-001",
+      "title": "Usuário recebe contexto do tenant correto",
+      "expected": "tenant e secretaria derivados da sessão"
+    },
+    {
+      "id": "MT-002",
+      "title": "Acesso cruzado por ID",
+      "expected": "negado e auditado"
+    },
+    {
+      "id": "BR-001",
+      "title": "Secretaria sem override",
+      "expected": "herda branding municipal"
+    },
+    {
+      "id": "BR-002",
+      "title": "SEMINFRA com timbrado próprio",
+      "expected": "override aplicado apenas aos seus documentos"
+    },
+    {
+      "id": "TM-001",
+      "title": "Template publicado é imutável",
+      "expected": "edição cria nova versão"
+    },
+    {
+      "id": "CL-001",
+      "title": "Cláusula bloqueada",
+      "expected": "hash permanece idêntico após geração"
+    },
+    {
+      "id": "PL-001",
+      "title": "Regra condicional satisfeita",
+      "expected": "cláusula configurada é incluída"
+    },
+    {
+      "id": "PL-002",
+      "title": "Regra não satisfeita",
+      "expected": "cláusula não é incluída"
+    },
+    {
+      "id": "PL-003",
+      "title": "Conflito de políticas",
+      "expected": "geração bloqueada com explicação"
+    },
+    {
+      "id": "SG-001",
+      "title": "Secretário no slot elaborador",
+      "expected": "não aparece pela política padrão"
+    },
+    {
+      "id": "SG-002",
+      "title": "Servidor técnico no slot elaborador",
+      "expected": "aparece se vínculo estiver ativo"
+    },
+    {
+      "id": "SG-003",
+      "title": "Secretário vigente no slot de acordo",
+      "expected": "pré-selecionado quando único"
+    },
+    {
+      "id": "SG-004",
+      "title": "Vínculo vencido",
+      "expected": "pessoa não elegível"
+    },
+    {
+      "id": "SN-001",
+      "title": "Documento emitido preserva snapshot",
+      "expected": "troca posterior não altera arquivo"
+    },
+    {
+      "id": "UX-001",
+      "title": "Servidor não escolhe timbrado",
+      "expected": "contexto resolve automaticamente"
+    },
+    {
+      "id": "OP-001",
+      "title": "Rollback de flag",
+      "expected": "fluxo legado volta sem perda de dados"
+    },
+    {
+      "id": "IS-001",
+      "title": "Cache multi-tenant",
+      "expected": "nenhum resultado compartilhado indevidamente"
+    },
+    {
+      "id": "IS-002",
+      "title": "RAG institucional",
+      "expected": "somente fontes do tenant atual"
+    },
+    {
+      "id": "SC-001",
+      "title": "Segundo município piloto",
+      "expected": "modelos e branding totalmente independentes"
+    }
+  ]
+}

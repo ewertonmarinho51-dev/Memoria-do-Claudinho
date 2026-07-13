@@ -1,0 +1,47 @@
+{
+  "id": "policy-example-001",
+  "tenantId": "tenant-paragominas",
+  "secretariatId": null,
+  "code": "EXAMPLE_CONDITIONAL_CLAUSE",
+  "version": 1,
+  "priority": 100,
+  "status": "DRAFT",
+  "condition": {
+    "and": [
+      {
+        "eq": [
+          {
+            "field": "procedure.modality"
+          },
+          "ELECTRONIC_AUCTION"
+        ]
+      },
+      {
+        "eq": [
+          {
+            "field": "process.priceRegistration"
+          },
+          true
+        ]
+      },
+      {
+        "eq": [
+          {
+            "field": "process.objectCategory"
+          },
+          "GOODS"
+        ]
+      }
+    ]
+  },
+  "actions": [
+    {
+      "type": "INCLUDE_CLAUSE",
+      "target": "CLAUSE_APPROVED_BY_TENANT",
+      "parameters": {
+        "anchor": "AFTER_REQUIREMENTS"
+      }
+    }
+  ],
+  "note": "Exemplo de mecanismo, não afirma obrigação jurídica. Publicar somente com texto e fundamento aprovados."
+}

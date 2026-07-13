@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InstitutionalPerson",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "tenantId",
+    "fullName",
+    "status"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "fullName": {
+      "type": "string",
+      "minLength": 2
+    },
+    "preferredName": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "enum": [
+        "ACTIVE",
+        "INACTIVE",
+        "ARCHIVED"
+      ]
+    },
+    "contact": {
+      "type": "object"
+    },
+    "sensitiveReference": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

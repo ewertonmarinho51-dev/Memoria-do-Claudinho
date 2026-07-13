@@ -1,0 +1,51 @@
+{
+  "people": [
+    {
+      "id": "person-001",
+      "tenantId": "tenant-paragominas",
+      "fullName": "Servidor Exemplo",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "person-002",
+      "tenantId": "tenant-paragominas",
+      "fullName": "Secretário Exemplo",
+      "status": "ACTIVE"
+    }
+  ],
+  "assignments": [
+    {
+      "id": "assign-001",
+      "tenantId": "tenant-paragominas",
+      "personId": "person-001",
+      "secretariatId": "sec-infra",
+      "positionTitle": "Servidor Técnico",
+      "roleCodes": [
+        "PUBLIC_SERVANT",
+        "DOCUMENT_DRAFTER"
+      ],
+      "validFrom": "2026-01-01",
+      "validTo": null,
+      "isSubstitute": false,
+      "designationReference": null,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "assign-002",
+      "tenantId": "tenant-paragominas",
+      "personId": "person-002",
+      "secretariatId": "sec-infra",
+      "positionTitle": "Secretário Municipal",
+      "roleCodes": [
+        "SECRETARY",
+        "AGREEING_AUTHORITY"
+      ],
+      "validFrom": "2026-01-01",
+      "validTo": null,
+      "isSubstitute": false,
+      "designationReference": "Ato cadastrado",
+      "status": "ACTIVE"
+    }
+  ],
+  "note": "Nomes fictícios para demonstração."
+}

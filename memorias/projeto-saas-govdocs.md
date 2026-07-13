@@ -4,7 +4,7 @@
 > início de cada sessão de trabalho; atualizar a cada marco relevante.
 > NUNCA gravar segredos aqui (chaves, tokens) — apontar onde estão.
 
-Atualizado em: 2026-07-07
+Atualizado em: 2026-07-13
 
 ## O que é o projeto
 
@@ -373,3 +373,51 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   llm.registrar_geracao persiste. 116 testes.
 - Lembrete de segurança PENDENTE: revogar os 4 tokens ghp_ expostos no
   chat + rotacionar chaves OpenAI/Gemini ao fim.
+
+## Pacote v3 completo recebido e arquivado (2026-07-13)
+
+- Usuário enviou MASTER_PROMPT_IMPLEMENTACAO.md + pacote_completo_saas_
+  licitacoes_v3.zip = pacote_arquitetura_saas_licitacoes_v2 + pacote_
+  evolucao_multi_municipio_v1, agora com os 153 arquivos completos
+  (a auditoria de 2026-07-12 foi feita só com resumos). Master prompt
+  avulso é idêntico ao de dentro do pacote evolucao (sha c1acd1bf...).
+  ARQUIVADO em memorias/anexos/pacote_completo_saas_licitacoes_v3/
+  neste repo (uploads e scratchpad da sessão são efêmeros). Sem segredos
+  no conteúdo (verificado).
+- Pacote v2 (motor): diagnóstico gerado-vs-manual (+ montagens jpg),
+  arquitetura alvo (pipeline determinístico, orçamento de chamadas,
+  máquina de estados, versionamento/patches, observabilidade), RAG
+  (ingestão/retrieval/avaliação/prompt-injection), 11 prompts prontos,
+  8 schemas JSON canônicos (document-bundle, generated-document,
+  process-context, audit-report, patch-plan...), perfis documentais
+  JSON (dfd/etp/tr/mapa-riscos/formatting), validações, UX,
+  implementação em fases 0-8, testes (test-cases.json), configs
+  (feature-flags, model-policy, rag-config, review-config).
+- Pacote evolucao v1 (multi-município): hierarquia PLATAFORMA→MUNICÍPIO
+  →SECRETARIA→PESSOAS→PROCESSOS→DOCUMENTOS; herança document_snapshot >
+  document_type_override > secretariat > tenant > platform_default;
+  identidade visual herdável c/ override por secretaria; modelos
+  versionados por blocos (FIXED_LOCKED, AI_GENERATED, CONDITIONAL_LOCKED,
+  DATA_BOUND, COMPUTED, SIGNATURE_SLOT, TABLE_SLOT); catálogo de
+  cláusulas versionado (nunca inventar conteúdo jurídico — migrar textos
+  aprovados); motor de políticas declarativo (DSL + simulador + conflito
+  bloqueia, nunca escolhe em silêncio); pessoas/vínculos/papéis/slots de
+  assinatura por ELEGIBILIDADE (secretário nunca aparece como elaborador;
+  vínculo vencido some; snapshot congela nome/cargo); painéis proprietário
+  vs servidor; 9 schemas de dados; fases 0-7. Alvo inicial: 1 município
+  (Paragominas) com ~15 secretarias.
+- Feature flags previstas: MULTI_TENANT_CONTEXT_V1, SECRETARIAT_CONTEXT_V1,
+  BRANDING_RESOLVER_V1, VERSIONED_TEMPLATES_V1, INSTITUTIONAL_PEOPLE_V1,
+  SIGNATURE_ELIGIBILITY_V1, CLAUSE_CATALOG_V1, POLICY_ENGINE_SHADOW_V1/
+  ENFORCE_V1, INSTITUTIONAL_CONTEXT_SNAPSHOT_V1 (todas default false,
+  escopo tenant).
+- MAPEAMENTO vs. já implementado: auditoria/matriz = docs/matriz-
+  compatibilidade.md (2026-07-12); Fase 0 parcial (116 testes,
+  registrar_geracao, sem flags formais); Fase 1 tenant padrão FEITA
+  (migração 0006 — aplicação no SQL Editor ainda PENDENTE). perfis.py/
+  validacao.py/export DOCX→LibreOffice cobrem parte das fases 0/4 do
+  pacote motor (ainda sem JSON canônico; geração segue markdown).
+- PRÓXIMO PASSO: Fase 2 — secretarias + contexto derivado da sessão
+  (normalizar secretarias, vincular usuários, resolver contexto
+  automaticamente). Decisão pendente ligada: Supabase Auth vs. auth
+  própria atual (PBKDF2). Implementação acontece no repo projeto-saas.

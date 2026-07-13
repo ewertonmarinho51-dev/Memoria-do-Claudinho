@@ -1,0 +1,42 @@
+{
+  "MULTI_TENANT_CONTEXT_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "SECRETARIAT_CONTEXT_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "BRANDING_RESOLVER_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "VERSIONED_TEMPLATES_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "INSTITUTIONAL_PEOPLE_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "SIGNATURE_ELIGIBILITY_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "CLAUSE_CATALOG_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "POLICY_ENGINE_SHADOW_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "POLICY_ENGINE_ENFORCE_V1": {
+    "default": false,
+    "scope": "tenant"
+  },
+  "INSTITUTIONAL_CONTEXT_SNAPSHOT_V1": {
+    "default": false,
+    "scope": "tenant"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "retrievalMode": "HYBRID",
+  "topK": 12,
+  "rerankTopK": 8,
+  "maxContextTokens": 30000,
+  "mandatoryFilters": [
+    "tenantId",
+    "isActive",
+    "usageMode"
+  ],
+  "legalSourcesRequireOfficial": true,
+  "processFactsRequireSameProcessId": true,
+  "deduplication": {
+    "byContentHash": true,
+    "maxChunksPerSource": 4
+  },
+  "traceEnabled": true,
+  "failWhenRequiredCoverageMissing": true
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ClauseVersion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "clauseCode",
+    "tenantId",
+    "version",
+    "title",
+    "content",
+    "contentMode",
+    "status",
+    "contentHash"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "clauseCode": {
+      "type": "string"
+    },
+    "tenantId": {
+      "type": "string"
+    },
+    "secretariatId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "contentMode": {
+      "enum": [
+        "FIXED_LOCKED",
+        "FIXED_PARAMETERIZED",
+        "CONDITIONAL_LOCKED",
+        "HYBRID"
+      ]
+    },
+    "allowedVariables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "compatibleDocumentTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sourceReferences": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "IN_REVIEW",
+        "APPROVED",
+        "PUBLISHED",
+        "RETIRED"
+      ]
+    },
+    "effectiveFrom": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "effectiveTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "contentHash": {
+      "type": "string",
+      "minLength": 16
+    },
+    "lockedForAI": {
+      "type": "boolean",
+      "const": true
+    }
+  }
+}

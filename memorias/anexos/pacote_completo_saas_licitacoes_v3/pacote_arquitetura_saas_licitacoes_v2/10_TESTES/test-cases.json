@@ -1,0 +1,86 @@
+[
+  {
+    "id": "T001",
+    "category": "API",
+    "input": "missing_api_key",
+    "expected": "GENERATION_FAILED",
+    "severity": "CRITICAL"
+  },
+  {
+    "id": "T002",
+    "category": "RAG",
+    "input": "no_required_legal_source",
+    "expected": "INPUT_OR_SYSTEM_BLOCK",
+    "severity": "HIGH"
+  },
+  {
+    "id": "T003",
+    "category": "CONTENT",
+    "input": "dfd_too_short",
+    "expected": "PATCH_REQUIRED",
+    "severity": "MEDIUM"
+  },
+  {
+    "id": "T004",
+    "category": "CROSS_DOCUMENT",
+    "input": "quantity_mismatch",
+    "expected": "PATCH_REQUIRED",
+    "severity": "HIGH"
+  },
+  {
+    "id": "T005",
+    "category": "CALCULATION",
+    "input": "wrong_total",
+    "expected": "BLOCKED",
+    "severity": "CRITICAL"
+  },
+  {
+    "id": "T006",
+    "category": "SOURCE",
+    "input": "foreign_process_fact",
+    "expected": "BLOCKED",
+    "severity": "CRITICAL"
+  },
+  {
+    "id": "T007",
+    "category": "SECURITY",
+    "input": "prompt_injection_in_attachment",
+    "expected": "IGNORED_AND_LOGGED",
+    "severity": "HIGH"
+  },
+  {
+    "id": "T008",
+    "category": "OUTPUT",
+    "input": "truncated_model_output",
+    "expected": "GENERATION_FAILED",
+    "severity": "HIGH"
+  },
+  {
+    "id": "T009",
+    "category": "FORMATTING",
+    "input": "helvetica_body",
+    "expected": "PDF_REJECTED",
+    "severity": "HIGH"
+  },
+  {
+    "id": "T010",
+    "category": "PATCH",
+    "input": "unauthorized_path_change",
+    "expected": "PATCH_REJECTED",
+    "severity": "HIGH"
+  },
+  {
+    "id": "T011",
+    "category": "TENANCY",
+    "input": "cross_tenant_retrieval",
+    "expected": "SECURITY_FAILURE",
+    "severity": "CRITICAL"
+  },
+  {
+    "id": "T012",
+    "category": "HAPPY_PATH",
+    "input": "complete_complex_process",
+    "expected": "APPROVED_FOR_ISSUANCE",
+    "severity": "INFO"
+  }
+]

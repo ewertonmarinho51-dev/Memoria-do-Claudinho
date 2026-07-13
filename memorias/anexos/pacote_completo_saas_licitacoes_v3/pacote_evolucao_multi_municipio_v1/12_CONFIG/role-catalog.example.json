@@ -1,0 +1,49 @@
+{
+  "roles": [
+    {
+      "code": "PLATFORM_OWNER",
+      "scope": "PLATFORM"
+    },
+    {
+      "code": "TENANT_ADMIN",
+      "scope": "TENANT",
+      "enabledByDefault": false
+    },
+    {
+      "code": "SECRETARIAT_MANAGER",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "PUBLIC_SERVANT",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "DOCUMENT_DRAFTER",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "PLANNING_TEAM_MEMBER",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "SECRETARY",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "AGREEING_AUTHORITY",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "APPROVING_AUTHORITY",
+      "scope": "TENANT_OR_SECRETARIAT"
+    },
+    {
+      "code": "CONTRACT_MANAGER",
+      "scope": "SECRETARIAT"
+    },
+    {
+      "code": "CONTRACT_FISCAL",
+      "scope": "SECRETARIAT"
+    }
+  ]
+}

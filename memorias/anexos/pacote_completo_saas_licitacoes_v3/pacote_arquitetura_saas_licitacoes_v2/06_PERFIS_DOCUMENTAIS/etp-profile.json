@@ -1,0 +1,233 @@
+{
+  "documentType": "ETP",
+  "profileVersion": "2.0.0",
+  "status": "REFERENCE_BASELINE",
+  "notes": "",
+  "clauses": [
+    {
+      "stableId": "etp.basic",
+      "title": "Informações básicas",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 10,
+      "targetBlocks": 16,
+      "maxBlocks": 25,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.need",
+      "title": "Descrição da necessidade",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 12,
+      "targetBlocks": 15,
+      "maxBlocks": 18,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.plan",
+      "title": "Previsão no planejamento",
+      "requirement": "CONDITIONAL",
+      "complexity": "MEDIUM",
+      "minBlocks": 5,
+      "targetBlocks": 8,
+      "maxBlocks": 10,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.requirements",
+      "title": "Requisitos da contratação",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 20,
+      "targetBlocks": 32,
+      "maxBlocks": 45,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.market",
+      "title": "Levantamento de mercado e soluções",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 15,
+      "targetBlocks": 21,
+      "maxBlocks": 30,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.solution",
+      "title": "Descrição da solução como um todo",
+      "requirement": "REQUIRED",
+      "complexity": "VERY_HIGH",
+      "minBlocks": 12,
+      "targetBlocks": 16,
+      "maxBlocks": 22,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.quantities",
+      "title": "Estimativa dos quantitativos",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 6,
+      "targetBlocks": 9,
+      "maxBlocks": 12,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.value",
+      "title": "Estimativa do valor",
+      "requirement": "REQUIRED",
+      "complexity": "MEDIUM",
+      "minBlocks": 4,
+      "targetBlocks": 6,
+      "maxBlocks": 9,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.risks",
+      "title": "Análise de riscos",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 5,
+      "targetBlocks": 8,
+      "maxBlocks": 12,
+      "requiresTable": true,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.parceling",
+      "title": "Parcelamento ou não",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 5,
+      "targetBlocks": 7,
+      "maxBlocks": 10,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.correlated",
+      "title": "Contratações correlatas",
+      "requirement": "CONDITIONAL",
+      "complexity": "MEDIUM",
+      "minBlocks": 2,
+      "targetBlocks": 3,
+      "maxBlocks": 5,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.results",
+      "title": "Resultados pretendidos",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 8,
+      "targetBlocks": 10,
+      "maxBlocks": 13,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.actions",
+      "title": "Providências da Administração",
+      "requirement": "REQUIRED",
+      "complexity": "MEDIUM",
+      "minBlocks": 4,
+      "targetBlocks": 6,
+      "maxBlocks": 9,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.environment",
+      "title": "Impactos ambientais",
+      "requirement": "CONDITIONAL",
+      "complexity": "HIGH",
+      "minBlocks": 6,
+      "targetBlocks": 10,
+      "maxBlocks": 14,
+      "requiresTable": false,
+      "requiresLegalBasis": false,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    },
+    {
+      "stableId": "etp.conclusion",
+      "title": "Posicionamento conclusivo",
+      "requirement": "REQUIRED",
+      "complexity": "HIGH",
+      "minBlocks": 8,
+      "targetBlocks": 12,
+      "maxBlocks": 18,
+      "requiresTable": false,
+      "requiresLegalBasis": true,
+      "requiredSourceModes": [
+        "MATERIAL_FACT"
+      ],
+      "notes": ""
+    }
+  ]
+}

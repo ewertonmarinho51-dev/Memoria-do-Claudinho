@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.municipio.gov.br/schemas/source-record.schema.json",
+  "title": "SourceRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceId",
+    "title",
+    "sourceType",
+    "usageMode",
+    "contentHash",
+    "isActive",
+    "sections"
+  ],
+  "properties": {
+    "sourceId": {
+      "type": "string",
+      "minLength": 3
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceType": {
+      "enum": [
+        "PROCESS_DATA",
+        "PROCESS_DOCUMENT",
+        "LAW",
+        "REGULATION",
+        "MANUAL",
+        "APPROVED_MODEL",
+        "OTHER"
+      ]
+    },
+    "usageMode": {
+      "enum": [
+        "MATERIAL_FACT",
+        "LEGAL_AUTHORITY",
+        "INSTITUTIONAL_GUIDANCE",
+        "STYLE_REFERENCE",
+        "PROHIBITED_FOR_GENERATION"
+      ]
+    },
+    "processId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "organizationId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "departmentId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "jurisdiction": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "effectiveFrom": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "effectiveTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "officialSource": {
+      "type": "boolean",
+      "default": false
+    },
+    "contentHash": {
+      "type": "string"
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "confidentiality": {
+      "enum": [
+        "PUBLIC",
+        "INTERNAL",
+        "RESTRICTED"
+      ]
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sectionId",
+          "path",
+          "text"
+        ],
+        "properties": {
+          "sectionId": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "pageStart": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "pageEnd": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

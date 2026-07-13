@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "provider": "openai",
+  "generation": {
+    "model": "SET_IN_ENV",
+    "temperature": 0.1,
+    "structuredOutput": true,
+    "tools": [],
+    "maxRetries": 1,
+    "rejectOnTruncation": true
+  },
+  "audit": {
+    "model": "SET_IN_ENV",
+    "temperature": 0,
+    "structuredOutput": true,
+    "tools": [],
+    "maxRetries": 1
+  },
+  "patch": {
+    "model": "SET_IN_ENV",
+    "temperature": 0,
+    "structuredOutput": true,
+    "tools": [],
+    "maxRetries": 1
+  },
+  "principles": [
+    "NO_SILENT_FALLBACK",
+    "NO_OPEN_WEB_IN_GENERATION",
+    "LOG_MODEL_AND_USAGE",
+    "SCHEMA_REQUIRED"
+  ]
+}
