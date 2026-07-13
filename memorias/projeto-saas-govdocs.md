@@ -350,3 +350,26 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   resolveu. Streamlit Cloud ok (packages.txt=libreoffice completo).
 - 111 testes. Pendências/backlog: edital sem manual de referência; Mapa
   de Riscos como doc próprio; regeneração por cláusula (JSON estruturado).
+
+## Escrita no GitHub restaurada + crash PDF + Fase 1 multi-tenant (2026-07-12)
+
+- Token novo do usuário (4º) VOLTOU a ter escrita; pushes normalizados.
+  Usuário aplicou motor-geracao.patch v1 na máquina dele (=311da6b);
+  cherry-pick do fix por cima. main=eea3613; branch sincronizado.
+- CRASH produção: fpdf2 "row too high" (linha de tabela > página; fpdf2
+  não divide linha). Fix: _pdf_render_tabela tenta fontes 9/7/6pt e
+  degrada p/ parágrafos "Rótulo: valor" — download nunca quebra. (Rota
+  principal já é DOCX→LibreOffice.) GOTCHA descoberto antes: container
+  local só tinha libreoffice-core; produção Cloud ok (packages.txt).
+- PACOTES v2/multi-município: auditoria entregue em
+  docs/matriz-compatibilidade.md (classificação por capacidade, fases
+  1-5, decisões pendentes: Supabase Auth na Fase 2; catálogo de cláusulas
+  só com textos aprovados do usuário; edital segue sem modelo manual).
+- FASE 1 IMPLEMENTADA: migração 0006 (tenants c/ Paragominas uuid fixo
+  11111111-...-1111 como DEFAULT de tenant_id em processos/usuarios/
+  config_orgaos/config_app/documentos_referencia; processos.snapshot;
+  tabela geracoes) — PENDENTE usuário aplicar no SQL Editor.
+  db.tenant_atual()/registrar_geracao_bd (best-effort) +
+  llm.registrar_geracao persiste. 116 testes.
+- Lembrete de segurança PENDENTE: revogar os 4 tokens ghp_ expostos no
+  chat + rotacionar chaves OpenAI/Gemini ao fim.
