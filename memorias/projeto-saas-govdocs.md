@@ -528,3 +528,61 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - PENDENTE: aplicar 0008 no SQL Editor; mergear branch
   correcao-automatica → main (PR); ligar flags em ordem; decisão
   Supabase Auth continua aberta.
+
+## Governança e qualidade documental V5 (branch governanca-v5)
+
+- SESSÃO 2026-07-14: implementadas as 7 FASES do
+  pacote_governanca_qualidade_documental_v1 (zip v5 do usuário) na
+  branch `governanca-v5` (commits 5ee8ea4..6337534), sobre o main já
+  com a correção automática v4 mergeada (PR #3). Migração 0009 criada
+  no repo — PENDENTE de aplicar no SQL Editor.
+- ORDEM DOS PACOTES ENTENDIDA: v4 = correção automática (FEITO,
+  mergeado); v5 = fundação de conhecimento/qualidade (FEITO, branch);
+  v6 = centro de governança/catálogo admin (matriz apresentada,
+  AGUARDANDO implementação — reutiliza condições ALL/ANY/NOT e regras
+  do v5). Zips v5/v6 são supersets com os pacotes anteriores dentro.
+- MÓDULOS NOVOS (todos com flag default OFF; tudo OFF = app idêntico):
+  - src/governanca.py: contratos (fato/regra/decisão/feedback), hash
+    canônico (mesma entrada = mesmo hash, KQ-014), condições ALL/ANY/
+    NOT validadas (formato que o policy builder do V6 reutiliza),
+    regra publicada IMUTÁVEL (derivar_nova_versao), anonimização
+    (CPF/CNPJ/email/fone/matrícula), transições de feedback.
+  - src/fatos.py (F2, flag_canonical_facts): extração determinística
+    do formulário (objeto, natureza derivada, srp, execução, prazo,
+    valor.total, itens[i].*), versionamento com substituição (mudou =
+    v+1 status extraido; anterior substituido), divergências
+    documentais, painel na tela final + confirmar todos.
+  - src/conhecimento.py (F3, flags knowledge_engine_shadow/active):
+    avaliador determinístico, precedência camada>prioridade, conflito
+    sem desempate BLOQUEIA expondo as regras (KQ-015), fonte revogada/
+    vigência ignoradas COM anotação, decisão append-only registrada.
+  - src/explicacoes.py (F4, flag_explanations): usuário/admin/auditor
+    SÓ a partir do registro (sem registro = sem explicação, KQ-008);
+    trilha da decisão guarda acoes/fontes/justificativa das regras.
+  - src/consistencia.py (F5, flag_process_consistency): valor global
+    divergente (HIGH corrigível, fonte fato:valor.total), soma itens ≠
+    total (CRITICAL bloqueia, UNRESOLVED_SOURCE_CONFLICT), quantidade
+    em tabela, vigência entre docs, objeto ausente; findings C###
+    entram no MESMO relatório v4 → corretor conserta com o fato como
+    fonte (corretor._fontes_dos_fatos injeta fato:<path> no prompt).
+  - src/qualidade.py (F6, flags confidence_score_shadow/emission_gate):
+    8 dimensões determinísticas, quality-config@1 versionada, crítico
+    SEMPRE bloqueia (KQ-006), <75 bloqueia, 75-90 aviso; shadow
+    persiste em qualidade_scores sem UI.
+  - src/aprendizado.py (F7, flags institutional_learning_capture/
+    publish): captura de edições em aprovar_e_avancar (só blocos
+    alterados, anonimizado, best-effort), curadoria humana no admin
+    (aba Qualidade), publicar exige flag+rótulo, rollback DEPRECATED.
+- MIGRAÇÃO 0009 (expand-only): fatos_canonicos, fontes_conhecimento,
+  regras_conhecimento, decisoes (SEM policy update/delete =
+  append-only), qualidade_scores, aprendizado_feedback. RLS padrão.
+- TESTES: 292 passando (73 novos, KQ-001..KQ-020 cobertos). Falha
+  local única: LibreOffice/Helvetica pré-existente do container.
+- GOTCHAS: (1) score com doc_keys reais (dfd/etp/tr) despenca por
+  cláusulas obrigatórias ausentes — testes de score usam chaves sem
+  perfil; (2) trecho do validador atravessa blocos: localizar_bloco por
+  tokens com desempate central (v4) resolve; (3) admin.py toggles agora
+  via _render_toggles_de_flags (helper único).
+- PENDENTE: aplicar 0009 no SQL Editor; PR governanca-v5 → main;
+  regras de conhecimento entram por INSERT no banco até o V6 (construtor
+  visual); decisão Supabase Auth segue aberta; V6 aguardando ordem.
