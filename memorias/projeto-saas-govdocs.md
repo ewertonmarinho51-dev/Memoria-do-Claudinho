@@ -586,3 +586,72 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - PENDENTE: aplicar 0009 no SQL Editor; PR governanca-v5 → main;
   regras de conhecimento entram por INSERT no banco até o V6 (construtor
   visual); decisão Supabase Auth segue aberta; V6 aguardando ordem.
+
+## Centro de Governança e Catálogo Documental V6 (branch governanca-v6)
+
+- SESSÃO 2026-07-14 (cont.): implementadas as 10 FASES do
+  pacote_centro_governanca_catalogo_v1 (pacote V6) na branch
+  `governanca-v6`, sobre o main já com V4 (correção automática) e V5
+  (governança/qualidade) mergeados. Migração 0010 APLICADA no Supabase
+  e verificada (10 tabelas novas). 12 flags default OFF = comportamento
+  V5 idêntico. Suíte com 356 testes passando (66 novos: T01-T25 do V6).
+- MÓDULOS NOVOS:
+  - governanca.py (estendido): contratos de ARTEFATO por tipo
+    (clausula/politica/familia/template) com validação de payload,
+    fluxo DRAFT→UNDER_REVIEW→APPROVED_FOR_SIMULATION→SHADOW→SCHEDULED→
+    PUBLISHED→SUPERSEDED/REVOKED, publicada IMUTÁVEL (derivar_versao),
+    5 comportamentos de cláusula, 6 papéis, 12 flags FLAGS_V6.
+  - auth.py: papel_governanca() e checagens pode_criar/revisar/
+    publicar/governa_plataforma; servidor comum = None (sem acesso);
+    admin do app = admin_municipal; modo aberto = proprietario.
+  - catalogo.py: CRUD versionado genérico (criar_artefato/editar_
+    rascunho/derivar/transicionar com papel por passo + supersede na
+    publicação + eventos append-only); seed dos perfis = rascunhos.
+  - politicas.py: políticas = artefatos; camada pelo ESCOPO; conflito
+    pré-publicação (ação oposta, mesma camada/prioridade, condições não
+    disjuntas → bloqueia expondo as duas); simular() no motor real;
+    regras_publicadas() alimenta conhecimento.executar_na_tela.
+  - familias.py: resolução determinística por contexto (única/ambigua/
+    nenhuma); empate real = pergunta objetiva; bloco_para_prompt injeta
+    obrigatórias/proibidas em llm.gerar_documento(instrucoes_extra).
+  - templates_gov.py: montagem por blocos determinística; FIXED_LOCKED
+    literal (nem marcadores); parâmetro fora dos permitidos rejeitado;
+    snapshot chave/versão/hash das cláusulas usadas.
+  - heranca.py: visao_heranca (origem por escopo), versao_efetiva,
+    sobrescrever (rascunho local, não duplica catálogo), restaurar
+    (revoga override, preserva histórico), comparar.
+  - pareceres.py: ingestão individual/lote com job por arquivo (dedupe
+    por hash); processar_lote sequencial, FAILED não derruba, retomável;
+    analisar() com anti-injection (texto delimitado + system que ignora
+    comandos); achados normalizados/anonimizados; clusterizar preserva
+    vínculo com cada parecer.
+  - implantacao.py: extração determinística de cláusulas candidatas de
+    docs aprovados, dedup por hash/título, criar_rascunhos (nunca
+    publica).
+  - laboratorio.py: proposta de UM parecer sem dados específicos;
+    mudança jurídica exige publicador+; regressao_historica (diff
+    antes/depois); gate de publicação com aprovação segregada (autor ≠
+    aprovador); rollback_restaurador (nova publicação, nada apagado).
+  - ui/governanca_ui.py (novo, ~700 linhas): página Governança com 9
+    módulos em abas, visível só com flag_governance_center + papel.
+    app.py roteia "Governança"; components sidebar mostra a opção.
+- MIGRAÇÃO 0010 (expand-only): governanca_artefatos, governanca_versoes,
+  governanca_publicacoes, simulacoes, pareceres, parecer_achados,
+  melhoria_clusters, melhoria_propostas, governanca_aprovacoes,
+  governanca_eventos (append-only) + usuarios.papel_governanca. RLS.
+- FLAGS V6 (config_app, ordem de ativação sugerida): governance_center
+  → clause_catalog_admin → visual_policy_builder → model_family_
+  resolution_shadow → _active → template_builder → tenant_inheritance_
+  admin → onboarding_assistant → legal_opinion_ingestion → _batch_
+  processing → improvement_laboratory → governance_publication_gate.
+  Toggles na aba Qualidade do admin (seção "Centro de Governança V6").
+- GOTCHAS: (1) rag.extrair_texto exige ≥50 chars (testes de parecer
+  precisam de texto longo); (2) supabase-py .is_("col","null") para
+  filtrar tenant NULL (plataforma); (3) unique index de artefato usa
+  coalesce com UUID sentinela para tratar NULL como valor.
+- ORDEM DOS 3 PACOTES (todos entregues nesta sessão): V4 correção
+  automática (mergeado PR#3), V5 governança/qualidade (mergeado PR#4),
+  V6 centro de governança (branch governanca-v6, PR a criar). V6
+  consome o motor de conhecimento e os fatos canônicos do V5.
+- PENDENTE: mergear governanca-v6 → main; ligar flags V6 em ordem;
+  decisão Supabase Auth (fechamento RLS por JWT) segue aberta.
