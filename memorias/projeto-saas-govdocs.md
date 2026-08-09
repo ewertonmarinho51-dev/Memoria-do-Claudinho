@@ -696,3 +696,32 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   quiser); P1: ordem do ETP em perfis, cláusulas condicionais como
   regras do motor v5, consistência de fundamentos, trace do RAG;
   flag_gate_emissao seguia não confirmada (MCP Supabase com timeout).
+
+## Sessão 2026-08-09 (cont.) — Validação pré-merge do P0
+
+- Veredito: APTO PARA PR (docs/validacao-pre-merge-p0.md na branch).
+- E2E sem chaves de API no ambiente: planilha REAL reconstruída da
+  extração do ETP (190/191 itens; extração de PDF é lossy — tabela
+  original renderizada tem 191 códigos, não os "210" da prosa).
+  Replay da saída defeituosa literal: main → DFD 115 págs/572704 115x,
+  Edital 50 págs/50x (patologia reproduzida); branch → 40 págs/1x e
+  bloqueios (URL, cargo, art.109). Saída correta: invariantes ok.
+- Suíte: main 366/1, branch 395/1 — mesma falha pré-existente
+  (LibreOffice/Helvetica). +29 testes, zero regressão.
+- Reset de sessão REFEITO por lista explícita (_CHAVES_DO_PROCESSO +
+  _PREFIXOS_DO_PROCESSO): _modelo_chave/_modelo_img são estado GLOBAL
+  do admin e NÃO podem ser limpos por prefixo genérico. Teste garante
+  usuario/tenant_id/api_key sobrevivem. GOTCHA: session_state é global
+  no pytest bare — teste que seta chaves globais precisa de higiene.
+- Isolamento 2 contratações consecutivas comprovado (nenhum termo de A
+  no doc de B; caches zerados; global preservado).
+- Modo demo: _gerar_demo embute amostra do formulário → novo validador
+  bloqueia por "tabela duplicada" (peculiaridade demo, não regressão).
+- Campos sem fonte (não implementar sem pedido): A = responsavel,
+  prazo; C = matrícula (usuarios não tem), equipe, prioridade, data de
+  conclusão da fase, CNPJ (tenants só slug/nome/uf).
+- RAG P1 (não iniciado, por ordem do usuário): RPCs já devolvem
+  similaridade/titulo/categoria (descartados em montar_bloco_referencias);
+  geracoes não tem colunas de trace → migração expand-only rag_trace
+  jsonb + consultas por tema de cláusula + piso de similaridade +
+  instrução "cite artigo só com trecho recuperado/mapa canônico".
