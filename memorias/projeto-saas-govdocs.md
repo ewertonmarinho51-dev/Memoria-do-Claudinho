@@ -655,3 +655,44 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   consome o motor de conhecimento e os fatos canônicos do V5.
 - PENDENTE: mergear governanca-v6 → main; ligar flags V6 em ordem;
   decisão Supabase Auth (fechamento RLS por JWT) segue aberta.
+
+## Sessão 2026-08-09 — Auditoria P0 dos defeitos reais de geração
+
+- CONTEXTO: usuário mandou prompt "AUDITORIA E PLANO DE CORREÇÃO" —
+  regra principal: NÃO criar funcionalidade nova; achar causa-raiz nos
+  componentes existentes. Evidência: 4 PDFs reais (Paragominas).
+- CAUSAS-RAIZ CONFIRMADAS (docs/auditoria-correcao-2026-08.md, branch
+  auditoria-correcao-p0):
+  1. Item 572704 repetido 95x no DFD / 96x no Edital: [[TABELA_ITENS]]
+     escrito no MEIO de frase → str.replace colava o cabeçalho Markdown
+     na prosa → conversor DOCX promovia o 1º ITEM a linha-cabeçalho
+     (w:tblHeader = repete em toda página). Além disso replace()
+     substituía TODAS as ocorrências da marca (tabela 210 itens
+     duplicada) e w:cantSplit em toda linha dava 1 item/página.
+  2. "matrícula: 15"/"Representante: alto"/999999: o PERFIL exige
+     cláusulas (equipe/matrícula/prioridade/data) que o FORMULÁRIO não
+     coleta → LLM tapava com tokens do contexto (R$ 15,75 → "15";
+     "alto giro" → "alto"). Não adicionar campos (= feature nova);
+     rede determinística na validacao + [PREENCHER].
+  3. URL tkshopping na Prioridade: memorando contém a planilha
+     completa com links; nada bloqueava URL na prosa.
+  4. Artigos errados (pregão×109, vigência ata×82, pagamento×98,
+     repactuação p/ bens, garantia "5%." seca): citações de memória do
+     LLM, sem verificação posterior; RAG não ancora artigo.
+  5. Estado entre contratações: reiniciar_processo não limpava
+     _ciclo_resultado/_fatos_cache/_familia_escolha_*/_memorando_lido/
+     _xlsx_lido/registro_geracoes.
+- CORREÇÕES (tudo em componente existente): planilha.injetar_tabela
+  (bloco próprio, 1x), export._tem_cabecalho + cantSplit só linha
+  ≤250 chars, validacao._validar_dados_improvisados (URL crua com
+  allowlist gov.br/plataformas, cargo inválido, matrícula suspeita,
+  CNPJ DV, tabela duplicada) + _validar_fundamentos_legais (só
+  pregão×109 BLOQUEIA; resto aviso), achados com 9 classificações
+  novas, prompts com MAPA CANÔNICO Lei 14.133 na regra 7, state limpo.
+- TESTES: tests/test_auditoria_p0.py — 29 casos com trechos LITERAIS
+  dos PDFs. Suíte: 395 passed, 1 failed (test_pdf_via_libreoffice —
+  pré-existente do container, Helvetica).
+- PENDENTE: PR de auditoria-correcao-p0 → main (usuário pede quando
+  quiser); P1: ordem do ETP em perfis, cláusulas condicionais como
+  regras do motor v5, consistência de fundamentos, trace do RAG;
+  flag_gate_emissao seguia não confirmada (MCP Supabase com timeout).
