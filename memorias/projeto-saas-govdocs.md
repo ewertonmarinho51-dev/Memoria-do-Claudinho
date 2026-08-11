@@ -725,3 +725,8 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   geracoes não tem colunas de trace → migração expand-only rag_trace
   jsonb + consultas por tema de cláusula + piso de similaridade +
   instrução "cite artigo só com trecho recuperado/mapa canônico".
+
+- 2026-08-09: PR #8 (auditoria-correcao-p0) MERGEADO na main (e088cef).
+  P0 em produção no próximo deploy do Streamlit Cloud. Próximos passos
+  combinados: smoke test com IA real pós-deploy; P1 (RAG grounding +
+  trace, ordem do ETP, cláusulas condicionais) aguarda autorização.
