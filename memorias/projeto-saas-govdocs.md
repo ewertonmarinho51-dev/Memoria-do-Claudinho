@@ -852,3 +852,40 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - PENDENTE p/ APTO: (1) reindexar a lei com embeddings; (2) indexar
   regulamento municipal; (3) aplicar 0011; (4) ligar flags na ordem;
   (5) gerar dossiê real com chave de API.
+
+## Sessão 2026-08-11 (final 2) — 0011 APLICADA + forense dos embeddings
+
+- MIGRAÇÃO 0011 APLICADA em produção (autorizada): geracoes.rag_trace
+  jsonb NOT NULL default '{}', índice parcial geracoes_rag_trace_idx.
+  61 registros preservados (MD5 dos ids idêntico antes/depois).
+  Retrocompat provada: insert sem rag_trace (formato main) → assume {};
+  insert com rag_trace → grava/lê lei_14133_2021:84. Linhas de teste
+  removidas (base restaurada em 61).
+- FORENSE DOS EMBEDDINGS (o usuário pediu para NÃO reindexar antes):
+  * NÃO há metadado de provedor/modelo no banco (chunks_referencia só
+    tem id/documento_id/ordem/conteudo/embedding/tsv — nem criado_em).
+  * Logs Supabase = 24h de retenção → nada de 08/07.
+  * GIT COMEÇA EM 13/07/2026 — a indexação foi em 08/07, então o código
+    daquela data NÃO está versionado. Ponto importante.
+  * CRONOLOGIA (config_app.atualizado_em × documentos_referencia):
+    02:58 lei indexada (sem vetor) → 03:06 manuais (sem vetor) →
+    03:13:13 OPENAI_API_KEY definida → 12:25-12:41 modelos e processos
+    anteriores indexados (COM vetor) → 12:46 GOOGLE_API_KEY definida.
+    Ou seja: todos os vetores nasceram numa janela em que só existia
+    chave OpenAI. Gemini está descartado.
+  * IMPRESSÃO VETORIAL: 2.978 vetores, 768 dims, L2 = 1,0000 ±0,00025,
+    sem outliers → normalizados = assinatura do text-embedding-3-* da
+    OpenAI com dimensions=768 (Gemini 768 não vem normalizado).
+  * RESSALVA: prova o PROVEDOR, não distingue 3-small de 3-large@768 —
+    espaços incompatíveis entre si. Por isso: reindexar tudo, não misturar.
+  * Por que lei/manuais ficaram sem vetor: foram indexados ANTES de
+    existir qualquer chave; _gerar_embeddings devolveu None e
+    indexar_arquivo gravou NULL em silêncio (resiliência by design).
+- PLANO DE REINDEXAÇÃO (documentado, NÃO executado, aguarda autorização):
+  padronizar text-embedding-3-small@768; colunas de proveniência
+  (expand-only); backup chunks_referencia_bkp; popular embedding_v2 em
+  paralelo por lotes; corte atômico + recriar índice; descartar antiga
+  depois do smoke test. Custo ~US$0,04 / ~46 chamadas.
+- Estado do índice: 4.539 chunks — 2.978 com vetor (modelo 1.577 +
+  processo_anterior 1.401), 1.561 SEM (lei 250 + entendimento 1.311).
+- P1 segue NÃO APTO PARA PR até homogeneizar o índice + smoke test real.
