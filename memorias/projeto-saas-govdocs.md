@@ -814,3 +814,41 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - PENDENTE: usuário rodar o smoke test (docs seção K: indexar Lei
   14.133 + regulamento municipal de Paragominas + normas das regras,
   aplicar 0011, ligar flags na ordem, gerar dossiê real).
+
+## Sessão 2026-08-11 (final) — P1 3a revisão + smoke test parcial
+
+- Commits d57c796 + 113b1ec + (smoke) na branch p1-grounding-consistencia.
+  Veredito mantido: NÃO APTO PARA PR — agora por 2 motivos de DADOS.
+- ACHADO CRÍTICO (Supabase real, projeto nxibohgoekphxblqtqku):
+  100% dos chunks da "Lei 14133.pdf" (250) e dos manuais/entendimentos
+  (1.311) estão SEM EMBEDDING. buscar_chunks_vetorial filtra
+  "embedding is not null" → EM PRODUÇÃO A LEI NUNCA FOI RECUPERADA;
+  só modelos (1.577) e processos anteriores (1.401), que estão 100%
+  embeddados. É a causa-raiz de DADOS dos artigos errados do P0.
+  AÇÃO: reindexar Lei 14.133 e manuais pela página Base de Conhecimento
+  com a chave de API ativa.
+- DEFEITO CORRIGIDO: buscar_chunks_textual usa websearch_to_tsquery =
+  AND. Frase temática longa → 0 resultados (medido: pagamento e srp).
+  rag.consulta_textual() reduz a termos significativos com " or " só no
+  modo textual. Depois: todos os temas recuperam; ts_rank real 0,05-0,09
+  (piso textual 0,01 está correto).
+- CONTRATO DOS RPCs: só devolvem conteudo/titulo/categoria/similaridade
+  — NÃO existem id/documento_id/ordem. Trace passou a gravar só o que
+  existe. Expor id do chunk exigiria recriar as funções (não feito, para
+  não mexer em produção sem autorização).
+- Confirmado no banco: regras_conhecimento = 0 publicadas (valida o
+  achado da 1a rodada); geracoes = 61 registros SEM coluna rag_trace
+  (migração 0011 pendente); NÃO há regulamentação municipal de
+  Paragominas indexada (categoria lei só tem a 14.133).
+- 3a revisão (itens do usuário): consolidador só o doc com autoridade
+  (silêncio ≠ promover preliminar); sobrepor_decisoes_consolidadas()
+  troca só o FATO procedimento.srp (não inventa "Entrega parcelada");
+  novo src/normas.py com identidade norma:dispositivo (lei_14133_2021:84
+  ≠ decreto_10024_2019:84); lastro só de categoria 'lei'; _rag_trace só
+  após geração bem-sucedida (com hash_texto/request_id); gatilho de
+  dados separado de TI_EQUIPAMENTO; dedicação de mão de obra só com
+  expressão inequívoca.
+- Suíte: 507 passed / 1 failed (mesma falha LibreOffice; main 395/1).
+- PENDENTE p/ APTO: (1) reindexar a lei com embeddings; (2) indexar
+  regulamento municipal; (3) aplicar 0011; (4) ligar flags na ordem;
+  (5) gerar dossiê real com chave de API.
