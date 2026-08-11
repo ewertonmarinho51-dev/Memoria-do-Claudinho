@@ -889,3 +889,39 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - Estado do índice: 4.539 chunks — 2.978 com vetor (modelo 1.577 +
   processo_anterior 1.401), 1.561 SEM (lei 250 + entendimento 1.311).
 - P1 segue NÃO APTO PARA PR até homogeneizar o índice + smoke test real.
+
+## Sessão 2026-08-11 (final 3) — Índice V2 preparado; backfill BLOQUEADO
+
+- Migrações APLICADAS em produção (autorizadas): 0012 (backup
+  chunks_referencia_bkp_20260811 + documentos_referencia_bkp_20260811,
+  hashes idênticos à tabela viva) e 0013 (embedding_v2 vector(768) +
+  embedding_provider/model/dimensions/version/generated_at/status com 2
+  CHECKs: vetor exige proveniência; status 'ok' exige vetor).
+  0014 (HNSW) ficou como .sql.PENDENTE — só após cobertura integral.
+- PADRÃO V2 FIXADO em config.py: openai / text-embedding-3-small / 768 /
+  v2. rag._gerar_embeddings NÃO tem mais fallback de provedor (o Gemini
+  segue só para GERAÇÃO DE TEXTO). Sem chave → busca textual + indexação
+  'pendente' + aviso. Dimensão divergente é recusada.
+- indexar_arquivo grava proveniência; sem vetor o chunk nasce 'pendente'
+  e avisa que não aparece na busca semântica (fim do NULL silencioso).
+- scripts/reindexar_embeddings_v2.py: idempotente, retomável (só
+  embedding_v2 is null, ordem estável), lotes, --simular, --validar;
+  aborta sem credenciais.
+- IMPRESSÕES DIGITAIS (para conferência futura):
+  estrutural 90c41e57140a984909bbd86547d72d50 | conteúdo
+  226d8ce165b98cacf00b995756fe5956 | documentos 8a1c325f060d8ef9659ba6739b803ae6
+  4.539 chunks / 40 docs / 2.978 legados com vetor / 6.055.174 chars.
+- CATÁLOGO: os 3 docs 'entendimento' NÃO são de Tribunal de Contas —
+  são manuais federais (AGU+MGI; Ministério das Comunicações ago/2025;
+  AGU/CGU). PROPOSTA (não executada): criar categoria 'manual' e
+  reclassificar. Não afeta lastro (só 'lei' dá lastro), afeta o rótulo
+  no prompt. Lei 14133.pdf = Planalto, categoria correta.
+- BLOQUEIO DO BACKFILL: a chave OpenAI está em config_app no banco.
+  RECUSEI (1) ler a chave via SQL (viraria segredo no transcript) e
+  (2) instalar pg_net/http no Postgres de produção. Destravar rodando
+  o script no ambiente com credenciais (recomendado) ou com chave
+  temporária. Nada foi perdido; produção intacta no índice legado.
+- Testes: 512 passed / 1 failed (LibreOffice pré-existente).
+- Pendentes: backfill, HNSW, corte do RPC, regulamentação municipal de
+  Paragominas (ausente da base), testes de recuperação/isolamento e
+  smoke test DFD→ETP→TR→Edital com IA real.
