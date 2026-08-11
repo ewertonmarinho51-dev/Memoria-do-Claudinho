@@ -925,3 +925,34 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - Pendentes: backfill, HNSW, corte do RPC, regulamentação municipal de
   Paragominas (ausente da base), testes de recuperação/isolamento e
   smoke test DFD→ETP→TR→Edital com IA real.
+
+## Sessão 2026-08-11 (final 4) — Ajustes pré-backfill (backfill NÃO rodado)
+
+- ACHADO DE SEGURANÇA: as tabelas de backup criadas por CREATE TABLE AS
+  (0012) nasceram SEM RLS e com grants padrão do schema public → anon e
+  authenticated tinham SELECT/INSERT/UPDATE/DELETE/TRUNCATE e as tabelas
+  eram expostas via PostgREST. Qualquer chave anônima podia APAGAR o
+  backup. LIÇÃO: CREATE TABLE AS no Supabase herda os default privileges
+  do schema public e NÃO habilita RLS.
+- Corrigido: 0015 (revoke anon/authenticated/public + enable RLS sem
+  políticas + grant select a service_role) e 0016 (service_role reduzido
+  a SELECT). Owner postgres mantém controle. Dados intactos
+  (4.539/40, impressão 90c41e57140a984909bbd86547d72d50).
+- BACKFILL: corrigido laço infinito (falha → status falha → mesmo lote
+  de novo). Agora MAX_TENTATIVAS_LOTE=3 com backoff 2s/4s, depois marca
+  'falha', encerra com SystemExit e a próxima execução reprocessa.
+  --limite agora limita de verdade (min(lote, maximo-processados)).
+  executar() aceita sb/openai_/dormir injetados (testável).
+- CREDENCIAL: resolver_credencial() ordem ambiente → secrets → config_app
+  (via db.obter_config, contrato do app). SUPABASE_URL/KEY nunca vêm do
+  banco. --credenciais imprime só "disponível: sim/não". Teste prova que
+  segredo/prefixo/tamanho/hash não vazam.
+- tests/test_backfill_v2.py (16 casos) importa o script via importlib.
+- 0017_categoria_manual.sql.PENDENTE: o CHECK de documentos_referencia
+  só aceita lei/acordao/entendimento/processo_anterior/modelo/outro —
+  UPDATE para 'manual' falharia. Ordem obrigatória: migração → dados →
+  código (senão a UI oferece opção que o banco rejeita).
+- 0014 (HNSW) segue PENDENTE: CREATE INDEX CONCURRENTLY não roda dentro
+  de transação → executar no SQL Editor/psql e conferir indisvalid.
+- Suíte: 528 passed / 1 failed (LibreOffice pré-existente).
+- AGUARDA: autorização para rodar o backfill dos 4.539 chunks.
