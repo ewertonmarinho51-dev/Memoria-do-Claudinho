@@ -730,3 +730,45 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   P0 em produção no próximo deploy do Streamlit Cloud. Próximos passos
   combinados: smoke test com IA real pós-deploy; P1 (RAG grounding +
   trace, ordem do ETP, cláusulas condicionais) aguarda autorização.
+
+## Sessão 2026-08-11 — P1 inteligência documental (branch, SEM merge)
+
+- Branch p1-grounding-consistencia (3 commits: f4fd7e2, 4bf6308, 0c8064d),
+  relatório em docs/p1-inteligencia-documental.md. Usuário pediu para
+  NÃO abrir PR/merge — aguarda revisão dele.
+- ACHADO DECISIVO: regras_conhecimento nasce VAZIA. O motor v5 estava
+  certo, mas nunca avaliava nada — por isso nenhuma cláusula condicional
+  funcionava. Solução: conhecimento.REGRAS_BASE (13 regras) na camada
+  'nacional' (piso da precedência; município/secretaria/processo vencem),
+  merge em executar_na_tela. NÃO foi criado seed de migração (as regras
+  vivem no código, versionadas e testáveis sem banco).
+- Fatos derivados novos (fatos.py): objeto.categoria por EVIDÊNCIA
+  PONDERADA (objeto x3, itens x1, requisitos x1, mínimo 3 — nunca
+  'if palavra in objeto'), procedimento.dedicacao_mao_de_obra,
+  contratacao.garantia_exigida, contratacao.amostra_exigida.
+- RAG (rag.py): TEMAS_JURIDICOS (14) + TEMAS_POR_DOCUMENTO (ORDEM =
+  prioridade; achado do teste RAG-02: pagamento/sanções ficavam fora do
+  orçamento do TR). MAX_TEMAS=4, TOP_K_TEMA=3, MAX_CHUNKS_PROMPT=8, UM
+  lote de embeddings para todas as consultas. Piso por modo configurável
+  (config_app rag_piso_vetorial=0.20 / rag_piso_textual=0.01). Dedup por
+  id/(documento,ordem). Ordenação por hierarquia: lei > acórdão >
+  modelo/processo anterior (mesmo com score menor). REGRA_DE_CITACAO:
+  artigo só com lastro recuperado ou mapa canônico.
+- Trace: llm.registrar_geracao(rag_trace=...) → db.registrar_geracao_bd
+  (insert cai para formato antigo se coluna não existir) → migração
+  0011_rag_trace.sql (expand-only, NÃO aplicada ainda no Supabase).
+- ETP: prompts.RACIOCINIO_ETP; modelo_execucao vira "PREFERÊNCIA DE
+  MODELAGEM" só no ETP; DFD = hipótese; TR operacionaliza; Edital
+  respeita. perfis.clausulas_aplicaveis renumera sem buraco.
+  validacao: necessidade antecipando solução, levantamento depois da
+  solução/ausente, absolutismo → avisos + findings.
+- consistencia.DECISOES (modalidade, srp, adjudicacao, garantia):
+  comparação por VALOR entre docs, referência = doc anterior da cadeia,
+  silêncio ≠ divergência, negativa testada antes da afirmativa.
+  + requisito verificável sem retomada em execução/fiscalização/aceitação.
+- Testes: +54 (test_p1_grounding.py 19, test_p1_inteligencia.py 35).
+  main 395/1 x branch 449/1 (mesma falha LibreOffice pré-existente).
+- GOTCHA: test_rag.py::test_bloco_referencias_formata_trechos precisou
+  ser reapontado (patch em _executar_rpc, não em buscar_referencias).
+- PENDENTE: revisão do usuário → PR; aplicar 0011; indexar normas na
+  base (sem acervo o grounding não tem o que recuperar); calibrar piso.
