@@ -772,3 +772,45 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   ser reapontado (patch em _executar_rpc, não em buscar_referencias).
 - PENDENTE: revisão do usuário → PR; aplicar 0011; indexar normas na
   base (sem acervo o grounding não tem o que recuperar); calibrar piso.
+
+## Sessão 2026-08-11 (cont.) — P1 2a auditoria (16 correções)
+
+- Commits 91f6fde + 7ea2f8d na branch p1-grounding-consistencia.
+  Veredito: NÃO APTO PARA PR — único bloqueio é o smoke test com RAG
+  real (item 17), impossível aqui (sem chaves/Supabase, base vazia).
+- AUTORIDADE POR ESTÁGIO (o ponto mais importante): consistencia.
+  DECISOES agora tem "autoridade" (srp/adjudicacao=etp; modalidade/
+  garantia=tr). documento_consolidador() = último doc que se manifestou
+  ATÉ o consolidador; divergir ANTES é legítimo, DEPOIS vira finding.
+  _verificar_srp_contra_fato só opina se NÃO houver ETP no dossiê.
+  conhecimento.dados_consolidados() sobrepõe o formulário com o que o
+  ETP decidiu antes de resolver as diretrizes (llm passa documentos).
+- FATOS: natureza NÃO vem mais de modelo_execucao com fallback BENS (SRP
+  é modelagem!); só de execução que a declare (obra/serviço) ou da
+  categoria (inferência). Tri-state com avaliar_termos() → True/False/
+  None + detecção de negação (_RE_NEGACAO). Garantia do FABRICANTE não
+  vira garantia contratual.
+- CONFIANÇA: gate por NÚMERO quebrou tudo (contrato novo_fato tem
+  default 0.5 → políticas do município paravam de agir). Solução final:
+  marcar a FONTE com prefixo "inferencia:" (fatos.PREFIXO_INFERENCIA) e
+  rebaixar só inferências não confirmadas → resultado["sugestoes"].
+  Regra pode ter aceita_inferencia=True.
+- REGRAS: renovacao_quantitativo fora do automático; amostra art. 41,II
+  + 42; TI_SOFTWARE separado de TI_EQUIPAMENTO (monitor não ganha LGPD/
+  migração); veículos vira ALERTA (sem exigência territorial); EPI com
+  NR-6/Portaria MTP 672/2021 "confirmar vigência".
+- RAG: TEMAS_NUCLEO (garantidos) + TEMAS_COMPLEMENTARES; _selecionar_
+  com_reserva() garante ≥1 chunk por tema prioritário antes do ranking
+  global; MAX_CHUNKS_PROMPT=10; acórdão ≠ legislação (_PAPEL_DA_FONTE).
+- GROUNDING PÓS-GERAÇÃO: prompts.MAPA_CANONICO virou dado (tema,
+  dispositivos, texto) — o parser antigo capturava "1" de "84 (1 ano)".
+  rag_trace guarda dispositivos por referência; validacao.validar_
+  documento(doc, texto, lastro) aponta artigo sem lastro; achados
+  categoria fundamento_sem_lastro (auto=True, remove o número).
+  st.session_state["_rag_trace"][doc] alimenta achados._lastro_da_sessao.
+- TESTES: 485 passed / 1 failed (mesma falha LibreOffice da main 395/1).
+  test_p1_grounding 31 + test_p1_inteligencia 59. Cinco testes antigos
+  atualizados (fixtures passam objeto.natureza como fato CONFIRMADO).
+- PENDENTE: usuário rodar o smoke test (docs seção K: indexar Lei
+  14.133 + regulamento municipal de Paragominas + normas das regras,
+  aplicar 0011, ligar flags na ordem, gerar dossiê real).
