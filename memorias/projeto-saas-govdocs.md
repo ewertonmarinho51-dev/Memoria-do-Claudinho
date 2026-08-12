@@ -992,3 +992,66 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   (some após o backfill). Busca vetorial continua na coluna legada —
   sem mudança de comportamento até o corte do RPC.
   Migrações no main: 0011 a 0017 (+ 0014 HNSW ainda .PENDENTE).
+
+## 2026-08-12 — UX das pendências humanas (branch `ux-pendencias-humanas`)
+
+Defeito reportado em produção: a tela final pedia ajuda humana com
+`informação pendente (documento DFD/ETP/TR/EDITAL)` — o usuário não
+tinha como saber o que responder.
+
+Causa-raiz (três, todas em componentes existentes):
+1. `achados._campos_requeridos` fazia `m.group(1).strip() or
+   "informação pendente"` — marcador SECO (`[PREENCHER]` sem descrição)
+   virava o literal genérico;
+2. o próprio sistema ensinava o marcador seco: `prompts.py` ("Onde
+   faltar dado, use [PREENCHER]"), `rag.montar_bloco_referencias`
+   (mesma frase) e `llm._gerar_demo` (as 4 minutas demo);
+3. a extração varria o DOCUMENTO INTEIRO e `validacao._validar_
+   bloqueantes` emitia UM achado agregado ("N ocorrência(s)") — nenhuma
+   pendência era endereçável individualmente.
+
+Efeito colateral descoberto na correção: findings de
+MISSING_REQUIRED_DATA SEM marcador (matrícula improvisada, CNPJ
+inválido) nunca recebiam `camposRequeridos` → a tela abria FORMULÁRIO
+VAZIO em WAITING_REQUIRED_DATA.
+
+Correção (nenhum arquivo novo em src/, nenhuma flag nova):
+- `validacao.campos_pendentes(texto)` — nome do campo por precisão:
+  descrição do marcador → cabeçalho da coluna da tabela (+ primeira
+  célula como qualificador) → rótulo antes do marcador na linha (sem
+  numeração de cláusula) → título da cláusula → trecho. Rótulo genérico
+  seco NUNCA é exibido. Siglas preservadas (PCA, não "Pca").
+  `pendencia_de_valor()` cobre dado improvisado com `molde`
+  ("matrícula: {valor}"). UM achado por marcador/ocorrência.
+- `achados.py` — resolve pendências da evidência → bloco → documento;
+  `pendencias` no finding; `camposRequeridos` continua list[str]
+  (contrato do `corretor.requiredFields`); regras de matrícula/CNPJ
+  ganharam `campo`.
+- `ciclo.py` — dedup por dado (inclusive ENTRE documentos: uma resposta
+  completa DFD+ETP+TR+Edital), com exceção POSICIONAL (tabela/cláusula/
+  trecho/valor_improvisado incluem o contexto na chave, senão a resposta
+  de uma linha vaza para outra). `_decisoes_requeridas` separa
+  DISCRETIONARY_DECISION com `etapa` do documento.
+- `ui/revisao.py` — rótulo "campo (SIGLAS)" + caption com cláusula e
+  trecho; decisões viram CARD com botão "Ir para o TR"
+  (`DOCUMENTOS[doc]["etapa"]` + `state.ir_para`), nunca caixa de texto.
+  `aplicar_respostas()` aplica da ÚLTIMA ocorrência para a primeira —
+  BUG REAL encontrado no fim a fim: aplicar na ordem do formulário
+  deslocava as ocorrências seguintes (9 marcadores sobravam).
+
+Resultado nas 4 minutas demo: 28 perguntas → 19; 19 rótulos genéricos →
+0; respondendo as 19 restam 0 marcadores e 0 perguntas na reauditoria.
+
+Testes: `tests/test_pendencias_humanas.py` (novo, 23 casos) + teste de
+tela (AppTest) em `test_revisao_ui` que falha se aparecer "informação
+pendente"/"documento DFD". Ajustados ao novo contrato: `test_ciclo`
+(payload enriquecido) e `test_rag` (marcador com descrição).
+Suíte: **557 passed / 1 failed** (test_export_estilos LibreOffice,
+PRÉ-EXISTENTE — confirmado em main limpo).
+
+Relatório: `docs/ux-pendencias-humanas.md`. Commit `658d13f`, pushado.
+**NÃO foi aberto PR e NÃO houve merge** (instrução do usuário).
+
+Ordem de trabalho que o usuário definiu para depois disto:
+V2 → piloto 20 → backfill 4.539 → HNSW (0014) → corte do RPC →
+recuperação jurídica → smoke test completo.
