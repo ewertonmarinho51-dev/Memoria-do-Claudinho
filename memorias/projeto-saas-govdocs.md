@@ -956,3 +956,29 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   de transação → executar no SQL Editor/psql e conferir indisvalid.
 - Suíte: 528 passed / 1 failed (LibreOffice pré-existente).
 - AGUARDA: autorização para rodar o backfill dos 4.539 chunks.
+## Sessão 2026-08-11 (final 5) — categoria `manual` aplicada
+
+- MIGRAÇÃO 0017 APLICADA: CHECK de documentos_referencia.categoria agora
+  aceita 'manual'. Reclassificação por DML com os 3 IDs auditados
+  (dfac3fad… AGU+MGI, 8c030522… MCom, 82dcb022… AGU/CGU) + trava
+  "and categoria='entendimento'" — nunca UPDATE genérico.
+- Conferido: entendimento 3→0, manual 0→3 (1.311 chunks), 40 docs,
+  4.539 chunks, 2.978 legados, embedding_v2 ainda 0, impressão
+  90c41e57140a984909bbd86547d72d50 INALTERADA (nada além da coluna
+  categoria de 3 linhas foi tocado).
+- CÓDIGO: CATEGORIAS['manual']='Manual / Orientação técnica';
+  MANUAIS=('manual',); _PAPEL_DA_FONTE diz que manual NÃO fornece
+  dispositivo e que manual federal não obriga o Município; manual fora
+  de LEGISLACAO (não dá lastro); _prioridade_fonte agora lei 4 >
+  controle 3 > manual 2 > outro 1 > moldes 0. +5 testes (inclusive um
+  que confere código × CHECK do banco).
+- Suíte: 533 passed / 1 failed (LibreOffice pré-existente).
+- BACKFILL SEGUE BLOQUEADO: --credenciais responde "não" para as três
+  neste ambiente. O usuário deve rodar no ambiente com credenciais:
+  --credenciais → --limite 20 → --validar → --lote 100 → --validar.
+- INFRA: o contêiner reiniciou no meio da sessão e /workspace/projeto-saas
+  sumiu. Reclonei em /home/user/projeto-saas (branch
+  p1-grounding-consistencia). ATENÇÃO: o caminho do repo da APLICAÇÃO
+  mudou de /workspace/projeto-saas para /home/user/projeto-saas.
+  Nada foi perdido (tudo estava pushado). venv recriado: precisa de
+  `pip install -r requirements.txt` + `pip install pytest`.
