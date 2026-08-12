@@ -982,3 +982,13 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   mudou de /workspace/projeto-saas para /home/user/projeto-saas.
   Nada foi perdido (tudo estava pushado). venv recriado: precisa de
   `pip install -r requirements.txt` + `pip install pytest`.
+
+- 2026-08-11: PR #9 (p1-grounding-consistencia) MERGEADO na main
+  (80d2d53). O P1 inteiro está em produção no próximo deploy do
+  Streamlit Cloud. ATENÇÃO no teste: flag_knowledge_engine_active já
+  está ON → diretrizes de cláusulas condicionais passam a entrar nos
+  prompts; e como a Lei 14.133 segue SEM embeddings, é esperado ver
+  avisos "fundamento sem lastro" para artigos fora do mapa canônico
+  (some após o backfill). Busca vetorial continua na coluna legada —
+  sem mudança de comportamento até o corte do RPC.
+  Migrações no main: 0011 a 0017 (+ 0014 HNSW ainda .PENDENTE).
