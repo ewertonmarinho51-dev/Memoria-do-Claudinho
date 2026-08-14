@@ -1211,3 +1211,51 @@ não misturar escopos; nenhuma chave foi usada no trabalho.
 - Varredura pré-push: sem segredos, sem PDF/PNG/.env, sem nomes ou
   matrículas reais. O nº de 15 dígitos aparece no teste de regressão de
   propósito (é fabricado, não identifica ninguém).
+
+### Ajustes finais + diagnóstico de segurança ampliado (14/08)
+
+`correcao-padrao-ouro-documentos` @ `62fe0e1` (8 commits) — 641 passed.
+ATENÇÃO: a mensagem do commit 62fe0e1 diz "644 passed"; o número real é
+**641**. Corrigido apenas no relato ao usuário (push já feito).
+
+- CNPJ rotulado agora atravessa \n: o separador barrava quebra de linha
+  e o caso "CNPJ\nsob o nº 541984981984984" (forma da extração de PDF)
+  passava. Teste fim a fim gera PDF, extrai e confere o bloqueio.
+- Rótulos: botão de Edital/ARP virou "Gerar minuta do …" (são montados
+  por código, não por IA); ZIP anuncia 4 sem SRP e 5 com ARP.
+- RESUMO SEMÂNTICO reintroduzido (`planilha.resumo_semantico`): tirar a
+  planilha do prompt resolveu a cópia mas deixou DFD/ETP/TR genéricos.
+  Agora vai a COMPOSIÇÃO FUNCIONAL por famílias (`FAMILIAS_ITENS`) com
+  % sobre a CONTAGEM de itens — nunca sobre valores, que permitiria
+  estimar preços. Zero código/descrição/preço/URL/linha de tabela.
+  Caso real: "Papelaria e expediente (56,2%); Outros (32,9%); Arquivo e
+  organização (9%); outras (1,9%)".
+- `docs/matriz-cobertura-edital-arp.md`: gerada de CLAUSULAS_BASE. A
+  coluna "modelo oficial municipal" está TODA em branco — os modelos de
+  Edital e ARP NÃO foram fornecidos (só vieram DFD/ETP/TR anteriores).
+  NÃO declarar conformidade jurídica sem essa comparação. PEDIR os
+  modelos ao usuário.
+- Helper de test_app passou a seguir o botão "Gerar …" (não "com IA").
+
+`seguranca-config-app` @ `afe30b3` — NADA APLICADO.
+- Inventário em produção (read-only): **26 das 28 tabelas** com
+  políticas anon de CRUD irrestrito. Só os 2 backups (0015/0016) estão
+  fechados. Sem views. Funções do domínio são SECURITY INVOKER; nenhuma
+  SECURITY DEFINER exposta.
+- CRÍTICO — `usuarios`: anon_select/insert/update/delete com
+  using(true). PBKDF2 NÃO protege: dá para SUBSTITUIR senha_hash (o
+  formato está em auth.py, repo público) e entrar como admin, ou
+  INSERIR usuário com papel='admin'. Tratar como possível
+  comprometimento de contas; sem trilha, não dá para afirmar que não
+  ocorreu.
+- 0018 RENOMEADA para `.sql.NAO_APLICAR`: o app usa só a chave
+  publicável em `db._cliente()` e auth própria (não Supabase Auth), sem
+  caminho service_role. Aplicar hoje = config_app invisível ao app →
+  chaves de IA somem E todas as feature flags caem para OFF em silêncio
+  (flag_ativa lê a mesma tabela).
+- ATALHO SEM SCHEMA: `llm._ler_chave` consulta
+  db.obter_config → session → st.secrets → env. Gravar as chaves nos
+  Secrets do Streamlit e APAGAR as linhas de config_app tira os segredos
+  do banco sem indisponibilidade.
+- Plano em 7 etapas no doc. Recomendação de arquitetura: Supabase Auth
+  (opção A), com service_role no servidor como transição (opção B).
