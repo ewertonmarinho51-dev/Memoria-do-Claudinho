@@ -1173,3 +1173,41 @@ OPENAI_API_KEY e GOOGLE_API_KEY em texto puro; `processos` e `revisoes`
 também são legíveis. Recomendado: ROTACIONAR as duas chaves e aplicar
 RLS/revogar grants (padrão das migrações 0015/0016). Não corrigi para
 não misturar escopos; nenhuma chave foi usada no trabalho.
+
+### Complemento (14/08, após revisão do usuário)
+
+- BRANCHES PUSHADAS (sem PR, sem merge):
+  * `correcao-padrao-ouro-documentos` @ `a4f023c` (7 commits)
+  * `seguranca-config-app` @ `a20030b` (1 commit, migração 0018 NÃO aplicada)
+
+- ERRO MEU, CORRIGIDO: o relatório dizia "ARP não existe como
+  instrumento". ERRADO. Existe `ANEXO III — MINUTA DA ATA DE REGISTRO DE
+  PREÇOS` com 10 cláusulas DENTRO do documento `edital`. Eu contei
+  menções à expressão na prosa e não abri o anexo. O correto é: a ARP
+  não é documento próprio do bundle (por isso não é exportada nem
+  validada como instrumento autônomo).
+  CONSEQUÊNCIA do erro: não li o anexo e deixei passar 2 defeitos que
+  estavam no pedido original e nenhuma regra pegava — agora fechados no
+  commit `a4f023c`:
+  * CNPJ `541984981984984` (15 dígitos) — a regra só via CNPJ de 14
+    dígitos NO FORMATO brasileiro; número inventado sem formatação
+    passava. Nova regra: qualquer número rotulado CNPJ com nº de dígitos
+    != 14 bloqueia (o DV continua cuidando dos de 14, sem duplicar).
+  * `Fornecedor (s) adjudicatário (s):licitantes` — parte contratada por
+    categoria. Nova regra bloqueia licitantes/vencedor/a definir/etc.
+
+- PÁGINAS 190 vs 231: as 190 são de PDF que EU REGENEREI neste
+  contêiner (motor fpdf2, pois a conversão LibreOffice falha aqui). O
+  PDF do usuário tem 231 páginas, foi gerado no Streamlit Cloud e NUNCA
+  ESTEVE ACESSÍVEL nesta sessão. O par 190→79 é válido só porque os dois
+  lados vieram do mesmo bundle e do mesmo motor. Relatório ganhou seção
+  9 registrando ambas as correções.
+
+- Defeitos da ARP auditada (para referência): vigência nos arts. 82 e
+  103 (é art. 84), ZERO menção a art. 84 e art. 86, Ata "repactuada" em
+  aquisição de bens, fornecedor "licitantes", CNPJ de 15 dígitos.
+
+- Suíte final: **626 passed, 0 failed**.
+- Varredura pré-push: sem segredos, sem PDF/PNG/.env, sem nomes ou
+  matrículas reais. O nº de 15 dígitos aparece no teste de regressão de
+  propósito (é fabricado, não identifica ninguém).
