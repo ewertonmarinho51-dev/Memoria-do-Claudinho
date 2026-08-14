@@ -1055,3 +1055,37 @@ Relatório: `docs/ux-pendencias-humanas.md`. Commit `658d13f`, pushado.
 Ordem de trabalho que o usuário definiu para depois disto:
 V2 → piloto 20 → backfill 4.539 → HNSW (0014) → corte do RPC →
 recuperação jurídica → smoke test completo.
+
+### Complemento (mesma branch `ux-pendencias-humanas`)
+
+- Commit `37193ec`: marcadores secos de `llm._gerar_demo()` corrigidos —
+  o próprio marcador declara o campo (órgão requisitante, responsável
+  pela demanda, justificativa da necessidade, local e data, requisitos,
+  modelo de execução, análise do parcelamento). As células da MATRIZ DE
+  RISCOS ficam SEM descrição DE PROPÓSITO: ali o nome vem do cabeçalho
+  da coluna e a lacuna é posicional (a "Mitigação" da linha A não é a da
+  linha B); marcador descrito seria idêntico entre linhas e as respostas
+  se sobreporiam. Comentário no código registra o motivo — NÃO "corrigir"
+  isso depois. Demo: 15 dos 19 campos vêm do marcador, 4 do cabeçalho da
+  tabela, 0 recaem em cláusula/trecho.
+
+- Commit `2d252c7`: seção I do relatório com o DIAGNÓSTICO DO "VERCEL".
+  Conclusão: NÃO é defeito do app. É commit status do GitHub App da
+  Vercel (projeto ewertonmarinho51-devs-projects/projeto-saas),
+  publicado no mesmo segundo do push (sem build); o CI real (ci.yml, job
+  "testes") passa; NÃO bloqueia merge — o PR #9 foi mergeado com esse
+  status em failure. O repo não tem package.json, vercel.json,
+  index.html, next.config.js nem api/ — nada construível pela Vercel; o
+  app é Streamlit e roda no Streamlit Cloud. Solução (sem código):
+  desconectar o projeto na Vercel (Settings → Git → Disconnect) ou
+  Ignored Build Step = `exit 0`. NÃO adicionar vercel.json.
+  O log (`npx vercel inspect dpl_5UhgNqMqucJKPsT12kwCzbakFcMq --logs`)
+  exige credencial da Vercel, não acessível deste ambiente.
+
+- Lixo conhecido na raiz: arquivo `projeto saas` (com espaço) com o
+  bootstrap do GitHub. Inofensivo, deixado como está.
+
+- Estado da branch: 3 commits sobre `main` 80d2d53; suíte 557 passed /
+  1 failed (test_export_estilos, pré-existente); CI verde. O usuário
+  fará a conferência final do diff e, ficando limpo, considera a branch
+  APTA PARA MERGE na main. PR ainda NÃO aberto.
