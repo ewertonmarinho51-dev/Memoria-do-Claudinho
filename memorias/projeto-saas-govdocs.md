@@ -1102,3 +1102,74 @@ recuperação jurídica → smoke test completo.
   Próximo da fila (ordem definida pelo usuário): V2 → piloto 20 →
   backfill 4.539 → HNSW (0014) → corte do RPC → recuperação jurídica →
   smoke test completo.
+
+## 2026-08-14 — Padrão ouro dos documentos (branch `correcao-padrao-ouro-documentos`)
+
+Branch a partir de `main` 72649bd. 6 commits. **SEM PR e SEM push** (o
+usuário pediu explicitamente: não fazer merge, PR nem enviar ao remoto).
+ATENÇÃO: a branch está SÓ NO CONTÊINER — se ele reiniciar, o trabalho
+se perde. Confirmar com o usuário antes de qualquer push.
+
+Caso reproduzido da produção: processo 46610544-3227-4523-a3f6-724af01f4daa
+(210 itens, R$ 8.024.834,67). Artefatos baixados via REST do Supabase
+(anon key) para o scratchpad — 368 KB de processo + 17 MB de revisoes,
+sem passar pelo contexto.
+
+CAUSA-RAIZ do "aprovado com PDF defeituoso" (duas, convergentes):
+(a) `ciclo.executar_com_persistencia` retomava qualquer job por
+    `idempotency_key = ciclo-{processo}-{hash}` — SEM a versão das
+    regras. Um APPROVED de 08/08 (regras antigas) era reproduzido para
+    sempre e os validadores novos nunca rodavam sobre o bundle;
+(b) em `steps.render_sucesso`, `validacao.validar_todos` só rodava no
+    caminho `veredito is None` (tela antiga). Com flag_tela_progresso ON
+    e veredito 'aprovado', os downloads saíam SEM validação alguma.
+
+Correções por commit:
+1. `50a18a6` gate: `validacao.versao_do_auditor()` (sha256 de validacao/
+   achados/consistencia/perfis) entra na chave de idempotência; o
+   caminho aprovado revalida o pacote final; minuta baixável marcada
+   "NÃO APROVADA PARA EMISSÃO"; auditor semântico recebe a prosa com as
+   tabelas resumidas (a tabela consumia os 20k chars e o TR de 91 KB
+   ficava sem auditoria).
+2. `73d0810` itens: prompt sem NENHUMA linha real (a "amostra" de 6
+   linhas era a origem do edital com 53 de 210 códigos); injeção para
+   qualquer tamanho + remoção das tabelas escritas pela IA;
+   `planilha.conferir_tabela` confere conjunto integral contra a fonte.
+   NB: reconhecimento de item NÃO usa nº de dígitos (a planilha real tem
+   códigos de 3 e de 6 dígitos — a 1ª versão perdia 2 dos 210).
+   Validador passou a receber `dados` (não só itens).
+3. `6f1e279` estrutura: repactuação em BENS vira BLOQUEIO (natureza vem
+   de fatos.NATUREZA_POR_*); regex de repactuação corrigido (pegava só
+   o substantivo, perdia "repactuados"); remissão "ETP, item 4.3" vira
+   aviso; 4 regras novas no prompt base + DFD e TR endurecidos.
+4. `5b68870` edital/ARP determinísticos: catálogo de cláusulas embutido
+   em templates_gov (camada nacional; cláusula publicada do município
+   com a mesma chave prevalece). ARP virou documento próprio
+   (config.DOCUMENTOS['arp'] + DOCUMENTOS_EXPORTAVEIS); wizard continua
+   com 4 etapas. Decisões (modalidade, critério, garantia, fornecedor,
+   CNPJ, datas) nascem [PREENCHER] e bloqueiam.
+5. `13524e9` exportação. DESCOBERTA IMPORTANTE: o LibreOffice está no
+   PATH mas a conversão FALHA em runtime — `_docx_em_pdf` devolvia None
+   em silêncio, o dossiê saía pelo fpdf2 e a UI dizia "libreoffice".
+   Era essa a "falha pré-existente" do test_export_estilos. `motor_pdf()`
+   agora faz conversão de sonda. Colunas proporcionais nos DOIS
+   renderizadores; coluna vazia descartada; multi_cell com
+   new_x=LMARGIN/new_y=NEXT (203 blocos saíam fora da margem).
+   No DOCX: tcW + w:tblGrid + w:tblW, e o w:tblW TEM de vir antes do
+   w:tblLayout (ordem do schema OOXML) senão é descartado.
+
+RESULTADO no bundle que a produção aprovou: de 1 aviso/APPROVED para
+**16 bloqueios / 32 findings / BLOCKED**. PDF: 190→79 páginas, 455→0
+palavras partidas, 203→0 blocos fora da margem, 210/210 itens.
+Suíte: **620 passed, 0 failed** (1ª vez que passa inteira).
+
+Fixture `tests/fixtures/caso_210_itens.json`: só a planilha (sem nomes,
+matrículas, datas ou conclusões do processo real).
+Relatório: `docs/diagnostico-padrao-ouro.md`.
+
+### SEGURANÇA — AÇÃO PENDENTE DO USUÁRIO (fora do escopo da branch)
+`config_app` é LEGÍVEL PELA CHAVE ANÔNIMA PÚBLICA do Supabase, com
+OPENAI_API_KEY e GOOGLE_API_KEY em texto puro; `processos` e `revisoes`
+também são legíveis. Recomendado: ROTACIONAR as duas chaves e aplicar
+RLS/revogar grants (padrão das migrações 0015/0016). Não corrigi para
+não misturar escopos; nenhuma chave foi usada no trabalho.
