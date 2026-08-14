@@ -1089,3 +1089,16 @@ recuperação jurídica → smoke test completo.
   1 failed (test_export_estilos, pré-existente); CI verde. O usuário
   fará a conferência final do diff e, ficando limpo, considera a branch
   APTA PARA MERGE na main. PR ainda NÃO aberto.
+
+- 2026-08-14: PR #10 (ux-pendencias-humanas) CRIADO E MERGEADO na main
+  (merge commit `cd9e2b1`). A correção de UX das pendências humanas está
+  em produção no próximo deploy do Streamlit Cloud. Diff da branch contra
+  a main após o merge: vazio (nada ficou para trás).
+  ATENÇÃO no teste em produção: com flag_tela_progresso e
+  flag_correcao_automatica ON, a tela final passa a nomear cada campo
+  pendente (com cláusula e trecho) e a mostrar cards de decisão com
+  botão "Ir para o <SIGLA>". flag_achados_estruturados e flag_gate_emissao
+  continuam OFF.
+  Próximo da fila (ordem definida pelo usuário): V2 → piloto 20 →
+  backfill 4.539 → HNSW (0014) → corte do RPC → recuperação jurídica →
+  smoke test completo.
