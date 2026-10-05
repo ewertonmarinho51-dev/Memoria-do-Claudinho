@@ -476,3 +476,10 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
 - Local: 88 testes dirigidos aprovados. Suíte inicial: 2456 aprovados, 329 skips, 4 falhas de dependências locais; após corrigir venv/PyYAML, 12 testes dos grupos afetados aprovados. Não confundir skips com testes de RLS/LibreOffice. Diff sem ocorrências no scanner de segredos. CI do PR ainda em execução neste registro.
 - Dataset: 5 pares de uma fixture oficial homogênea, hashes verificáveis, todos sem rótulo humano. Runner offline não inventa métricas. Não houve chamada paga; credencial local para bateria real não disponível.
 - **NÃO APTO PARA AUDITORIA**: faltam corpus diverso com rótulos humanos, calibração/thresholds, bateria real e benchmark A/B 1/10/50/210 itens. Custos, latência, precision/recall reais não medidos. Relatório completo em `docs/jev/RELATORIO.md` no PR.
+
+
+## 05/10/2026 — Jev: CI verde, merge autorizado, promoção VPS pendente
+
+Usuário autorizou explicitamente implantação. Corrigido hash de proveniência CRLF/LF com duas regressões. Suíte completa local: 2468 passed, 329 skipped (337,13 s). CI 37360499201: 2664 passed, 133 skipped (253,49 s), segredos/editor/SQL/PDF aprovados. PR produto #43 mergeado por squash em 0e54ecc7b6a499b87dce74a2d66412b75fe3448d. Flag jev_price_research continua OFF; calibração humana, chamada real e A/B pendentes, sem declaração de precisão/economia.
+
+Health público retornou HTTP 200 ok. VPS exige promoção explícita: merge não confirma deploy. A tentativa SSH chegou ao servidor, mas terminou em Permission denied (publickey,password); computador sem ssh-agent/chave configurada. Solicitado somente caminho da chave privada ou cadastro de nova chave pública, nunca segredo no chat. Presença da chave OpenRouter em config_app confirmada por booleano, sem ler valor. Nenhuma alteração no banco de produção nesta etapa.
