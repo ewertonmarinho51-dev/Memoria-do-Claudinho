@@ -464,3 +464,22 @@ Exporta DOCX/PDF/ZIP (dossiê consolidado + individuais).
   aplicar 0004/0005/0006 se ainda não aplicadas + 0007. Próxima fase:
   3 (templates versionados + catálogo de cláusulas — textos SÓ vindos
   de documentos aprovados do usuário).
+
+
+## Jev na Pesquisa de Preços — implementação em homologação (2026-10-01)
+
+- Produto: HEAD inicial `c55ba4d60125a886ff72c44abb51f8846deb5a52`, branch `feature/jev-price-research`, commit remoto `cc3f5dd8ba767920f17628a9e7f075c8d56bb4d0`.
+- PR rascunho: https://github.com/ewertonmarinho51-dev/projeto-saas/pull/43 . Não fazer merge/deploy/ativar flag até homologação explícita.
+- Adapter `src/precos/jev.py`: Decisions API OpenRouter, modelo pinado `typesafe/jev-1.13`, chave server-side já existente, validação tipada Noul/Choice/Score; probabilidades e usage preservados. Noul não tem confidence no contrato.
+- `src/precos/decisoes.py`: filtros e identidade exata antes da chamada, três perguntas por par, catálogo somente entre candidatos recuperados, state mínimo sem preço, releitura autorizada de vínculos/tenant/hash, reserva idempotente e cache na trilha existente. Schema `price-reference-v1`. Nada é aceito automaticamente; estimativa e Decimal continuam determinísticos.
+- Flag `jev_price_research` default OFF independente de `price_research`. `JEV_FAILURE_MODE=HUMAN_REVIEW` padrão; fallback generativo somente explicativo e opt-in. Gateway distingue decision de generation; reaproveita registrar_geracao e geracoes. Não criou infraestrutura de orçamento/circuit breaker ausente no gateway anterior.
+- Local: 88 testes dirigidos aprovados. Suíte inicial: 2456 aprovados, 329 skips, 4 falhas de dependências locais; após corrigir venv/PyYAML, 12 testes dos grupos afetados aprovados. Não confundir skips com testes de RLS/LibreOffice. Diff sem ocorrências no scanner de segredos. CI do PR ainda em execução neste registro.
+- Dataset: 5 pares de uma fixture oficial homogênea, hashes verificáveis, todos sem rótulo humano. Runner offline não inventa métricas. Não houve chamada paga; credencial local para bateria real não disponível.
+- **NÃO APTO PARA AUDITORIA**: faltam corpus diverso com rótulos humanos, calibração/thresholds, bateria real e benchmark A/B 1/10/50/210 itens. Custos, latência, precision/recall reais não medidos. Relatório completo em `docs/jev/RELATORIO.md` no PR.
+
+
+## 05/10/2026 — Jev: CI verde, merge autorizado, promoção VPS pendente
+
+Usuário autorizou explicitamente implantação. Corrigido hash de proveniência CRLF/LF com duas regressões. Suíte completa local: 2468 passed, 329 skipped (337,13 s). CI 37360499201: 2664 passed, 133 skipped (253,49 s), segredos/editor/SQL/PDF aprovados. PR produto #43 mergeado por squash em 0e54ecc7b6a499b87dce74a2d66412b75fe3448d. Flag jev_price_research continua OFF; calibração humana, chamada real e A/B pendentes, sem declaração de precisão/economia.
+
+Health público retornou HTTP 200 ok. VPS exige promoção explícita: merge não confirma deploy. A tentativa SSH chegou ao servidor, mas terminou em Permission denied (publickey,password); computador sem ssh-agent/chave configurada. Solicitado somente caminho da chave privada ou cadastro de nova chave pública, nunca segredo no chat. Presença da chave OpenRouter em config_app confirmada por booleano, sem ler valor. Nenhuma alteração no banco de produção nesta etapa.
